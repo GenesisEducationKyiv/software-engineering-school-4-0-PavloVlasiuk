@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+
 import { AppConfigService } from './app-config.service';
-import emailConfig from './email.config';
 import appConfig from './app.config';
+import emailConfig from './email.config';
 
 @Module({
   imports: [

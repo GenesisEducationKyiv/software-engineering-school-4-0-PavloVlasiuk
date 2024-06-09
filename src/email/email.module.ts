@@ -1,12 +1,14 @@
+import * as path from 'path';
+
 import { Module } from '@nestjs/common';
-import { EmailService } from './email.service';
-import { EmailController } from './email.controller';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import * as path from 'path';
-import { DatabaseModule } from 'src/database/database.module';
-import { AppConfigModule } from 'src/config/app-config.module';
-import { AppConfigService } from 'src/config/app-config.service';
+
+import { EmailController } from './email.controller';
+import { EmailService } from './email.service';
+import { AppConfigModule } from '../config/app-config.module';
+import { AppConfigService } from '../config/app-config.service';
+import { DatabaseModule } from '../database/database.module';
 
 @Module({
   imports: [

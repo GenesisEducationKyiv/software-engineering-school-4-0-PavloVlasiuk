@@ -1,10 +1,11 @@
-import { RateService } from '../rate/rate.service';
-import { TaskScheduleService } from './task-schedule.service';
-import { EmailService } from '../email/email.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Email } from '@prisma/client';
-import { CurrentRateResponse } from '../rate/responses/current-rate.response';
+
 import { EMAIL_SUBJECT } from './task-schedule.constants';
+import { TaskScheduleService } from './task-schedule.service';
+import { EmailService } from '../email/email.service';
+import { RateService } from '../rate/rate.service';
+import { CurrentRateResponse } from '../rate/responses/current-rate.response';
 
 describe('TaskScheduleService', () => {
   let taskScheduleService: TaskScheduleService;
