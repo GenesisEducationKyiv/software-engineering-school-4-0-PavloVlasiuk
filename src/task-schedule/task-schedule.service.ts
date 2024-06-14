@@ -9,7 +9,7 @@ export class TaskScheduleService {
   constructor(private readonly emailService: EmailService) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_10AM, { timeZone: TIMEZONE })
-  async sendCurrentRate(): Promise<void> {
+  async sendCurrentRateEmail(): Promise<void> {
     await this.emailService.sendCurrentRate();
   }
 }
