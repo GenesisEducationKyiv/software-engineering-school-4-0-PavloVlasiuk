@@ -1,12 +1,13 @@
-import { EmailRepository } from '../database/repositories/email.repository';
-import { EmailService } from './email.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MailerService } from '@nestjs-modules/mailer';
-import { ISendEmailOptions } from './interfaces/send-email-options.interface';
-import { EMAIL_SUBJECT } from '../task-schedule/task-schedule.constants';
-import { SubscribeEmailDto } from './dtos/subscribe-email.dto';
-import { AlreadySubscribedException } from '../common/exceptions';
 import { Email } from '@prisma/client';
+
+import { SubscribeEmailDto } from './dtos/subscribe-email.dto';
+import { EmailService } from './email.service';
+import { ISendEmailOptions } from './interfaces/send-email-options.interface';
+import { AlreadySubscribedException } from '../common/exceptions';
+import { EmailRepository } from '../database/repositories/email.repository';
+import { EMAIL_SUBJECT } from '../task-schedule/task-schedule.constants';
 
 describe('EmailService', () => {
   let emailService: EmailService;

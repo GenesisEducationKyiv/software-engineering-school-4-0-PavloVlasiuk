@@ -1,4 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
+
 import { RateService } from './rate.service';
 import { CurrentRateResponse } from './responses/current-rate.response';
 

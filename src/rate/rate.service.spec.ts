@@ -1,8 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { RateService } from './rate.service';
 import { HttpService } from '@nestjs/axios';
-import { IExchangeRate } from './interfaces/exchange-rate.interface';
+import { Test, TestingModule } from '@nestjs/testing';
 import { of } from 'rxjs';
+
+import { IExchangeRate } from './interfaces/exchange-rate.interface';
+import { RateService } from './rate.service';
 import { CurrentRateResponse } from './responses/current-rate.response';
 
 describe('RateService', () => {

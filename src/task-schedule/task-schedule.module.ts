@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
+
 import { TaskScheduleService } from './task-schedule.service';
-import { RateModule } from 'src/rate/rate.module';
-import { EmailModule } from 'src/email/email.module';
+import { EmailModule } from '../email/email.module';
+import { RateModule } from '../rate/rate.module';
 
 @Module({
   imports: [RateModule, EmailModule],

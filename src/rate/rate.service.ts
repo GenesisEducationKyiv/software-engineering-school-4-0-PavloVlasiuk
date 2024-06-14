@@ -1,8 +1,9 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
+import { firstValueFrom } from 'rxjs';
+
 import { IExchangeRate } from './interfaces/exchange-rate.interface';
 import { API_URL } from './rate.constants';
-import { firstValueFrom } from 'rxjs';
 import { CurrentRateResponse } from './responses/current-rate.response';
 
 @Injectable()
