@@ -5,10 +5,12 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 import { EmailController } from './email.controller';
-import { EmailService } from './email.service';
+import { EmailService } from './services/email.service';
+import { NodeMailerService } from './services/node-mailer.service';
 import { AppConfigModule } from '../config/app-config.module';
 import { AppConfigService } from '../config/app-config.service';
 import { DatabaseModule } from '../database/database.module';
+import { RateModule } from '../rate/rate.module';
 
 @Module({
   imports: [
@@ -37,10 +39,10 @@ import { DatabaseModule } from '../database/database.module';
       inject: [AppConfigService],
     }),
     DatabaseModule,
-    AppConfigModule,
+    RateModule,
   ],
   controllers: [EmailController],
-  providers: [EmailService],
-  exports: [EmailService],
+  providers: [NodeMailerService, EmailService],
+  exports: [NodeMailerService, EmailService],
 })
 export class EmailModule {}

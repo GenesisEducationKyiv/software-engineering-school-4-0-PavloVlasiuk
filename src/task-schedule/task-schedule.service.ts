@@ -1,40 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
-import { EMAIL_SUBJECT, TIMEZONE } from './task-schedule.constants';
-import { EmailService } from '../email/email.service';
-import { RateService } from '../rate/rate.service';
+import { TIMEZONE } from './task-schedule.constants';
+import { EmailService } from '../email/services/email.service';
 
 @Injectable()
 export class TaskScheduleService {
-  constructor(
-    private readonly rateService: RateService,
-    private readonly emailService: EmailService,
-  ) {}
+  constructor(private readonly emailService: EmailService) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_10AM, { timeZone: TIMEZONE })
-  public async sendCurrentRate(): Promise<void> {
-    const { rate } = await this.rateService.getCurrentRate();
-
-    const subscribers = await this.emailService.getAllSubscribers();
-
-    const context = {
-      rate,
-      date: new Date().toDateString(),
-    };
-
-    const emailPromises: Array<Promise<void>> = [];
-
-    for (const subscriber of subscribers) {
-      emailPromises.push(
-        this.emailService.sendTemplatedEmail({
-          to: subscriber.email,
-          subject: EMAIL_SUBJECT,
-          context,
-        }),
-      );
-    }
-
-    Promise.all(emailPromises);
+  async sendCurrentRate(): Promise<void> {
+    await this.emailService.sendCurrentRate();
   }
 }
