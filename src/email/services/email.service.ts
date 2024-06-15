@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { Email } from '@prisma/client';
 
 import { NodeMailerService } from './node-mailer.service';
-import { AlreadySubscribedException } from '../../common/exceptions';
 import { EmailRepository } from '../../database/repositories/email.repository';
 import { IExchangeRate } from '../../rate/interfaces';
 import { SubscribeEmailDto } from '../dtos/subscribe-email.dto';
+import { AlreadySubscribedException } from '../exceptions';
 import { ISendCurrentRateContext } from '../interfaces/send-email-options.interface';
 
 @Injectable()

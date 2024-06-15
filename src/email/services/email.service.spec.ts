@@ -3,10 +3,10 @@ import { Email } from '@prisma/client';
 
 import { EmailService } from './email.service';
 import { NodeMailerService } from './node-mailer.service';
-import { AlreadySubscribedException } from '../../common/exceptions';
 import { EmailRepository } from '../../database/repositories/email.repository';
 import { IExchangeRate } from '../../rate/interfaces';
 import { SubscribeEmailDto } from '../dtos/subscribe-email.dto';
+import { AlreadySubscribedException } from '../exceptions';
 
 describe('EmailService', () => {
   let emailService: EmailService;
