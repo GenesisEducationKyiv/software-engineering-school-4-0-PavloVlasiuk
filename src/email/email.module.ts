@@ -10,7 +10,6 @@ import { NodeMailerService } from './services/node-mailer.service';
 import { AppConfigModule } from '../config/app-config.module';
 import { AppConfigService } from '../config/app-config.service';
 import { DatabaseModule } from '../database/database.module';
-import { RateModule } from '../rate/rate.module';
 
 @Module({
   imports: [
@@ -39,7 +38,6 @@ import { RateModule } from '../rate/rate.module';
       inject: [AppConfigService],
     }),
     DatabaseModule,
-    RateModule,
   ],
   controllers: [EmailController],
   providers: [NodeMailerService, EmailService],

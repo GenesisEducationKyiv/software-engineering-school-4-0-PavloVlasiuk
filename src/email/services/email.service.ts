@@ -4,7 +4,7 @@ import { Email } from '@prisma/client';
 import { NodeMailerService } from './node-mailer.service';
 import { AlreadySubscribedException } from '../../common/exceptions';
 import { EmailRepository } from '../../database/repositories/email.repository';
-import { RateService } from '../../rate/rate.service';
+import { IExchangeRate } from '../../rate/interfaces';
 import { SubscribeEmailDto } from '../dtos/subscribe-email.dto';
 import { ISendCurrentRateContext } from '../interfaces/send-email-options.interface';
 
@@ -12,7 +12,6 @@ import { ISendCurrentRateContext } from '../interfaces/send-email-options.interf
 export class EmailService {
   constructor(
     private readonly emailRepository: EmailRepository,
-    private readonly rateService: RateService,
     private readonly nodeMailerService: NodeMailerService,
   ) {}
 
@@ -24,9 +23,7 @@ export class EmailService {
     await this.emailRepository.create({ email });
   }
 
-  async sendCurrentRate(): Promise<void> {
-    const { rate } = await this.rateService.getCurrentRate();
-
+  async sendCurrentRate({ rate }: IExchangeRate): Promise<void> {
     const subscribers: Array<Email> = await this.getAllSubscribers();
 
     const context: ISendCurrentRateContext = {

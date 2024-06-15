@@ -5,14 +5,12 @@ import { EmailService } from './email.service';
 import { NodeMailerService } from './node-mailer.service';
 import { AlreadySubscribedException } from '../../common/exceptions';
 import { EmailRepository } from '../../database/repositories/email.repository';
-import { RateService } from '../../rate/rate.service';
-import { CurrentRateResponse } from '../../rate/responses/current-rate.response';
+import { IExchangeRate } from '../../rate/interfaces';
 import { SubscribeEmailDto } from '../dtos/subscribe-email.dto';
 
 describe('EmailService', () => {
   let emailService: EmailService;
   let emailRepository: EmailRepository;
-  let rateService: RateService;
   let nodeMailerService: NodeMailerService;
 
   beforeEach(async () => {
@@ -28,12 +26,6 @@ describe('EmailService', () => {
           },
         },
         {
-          provide: RateService,
-          useValue: {
-            getCurrentRate: jest.fn(),
-          },
-        },
-        {
           provide: NodeMailerService,
           useValue: {
             sendTemplatedEmail: jest.fn(),
@@ -44,7 +36,6 @@ describe('EmailService', () => {
 
     emailService = testingModule.get<EmailService>(EmailService);
     emailRepository = testingModule.get<EmailRepository>(EmailRepository);
-    rateService = testingModule.get<RateService>(RateService);
     nodeMailerService = testingModule.get<NodeMailerService>(NodeMailerService);
   });
 
@@ -118,22 +109,18 @@ describe('EmailService', () => {
         },
       ];
 
-      const currency: CurrentRateResponse = {
+      const currency: IExchangeRate = {
         rate: 37.414,
         exchangedate: '15.05.2024',
       };
 
       jest.spyOn(emailRepository, 'findMany').mockResolvedValue(subscribers);
 
-      jest.spyOn(rateService, 'getCurrentRate').mockResolvedValue(currency);
-
       jest
         .spyOn(nodeMailerService, 'sendTemplatedEmail')
         .mockResolvedValue(undefined);
 
-      await emailService.sendCurrentRate();
-
-      expect(rateService.getCurrentRate).toHaveBeenCalledTimes(1);
+      await emailService.sendCurrentRate(currency);
 
       expect(emailRepository.findMany).toHaveBeenCalledTimes(1);
 

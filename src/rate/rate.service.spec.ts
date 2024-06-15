@@ -2,9 +2,8 @@ import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { of } from 'rxjs';
 
-import { IExchangeRate } from './interfaces/exchange-rate.interface';
+import { IExchangeRate, IGetExchangeRate } from './interfaces';
 import { RateService } from './rate.service';
-import { CurrentRateResponse } from './responses/current-rate.response';
 
 describe('RateService', () => {
   let rateService: RateService;
@@ -33,7 +32,7 @@ describe('RateService', () => {
 
   describe('getCurrentRate', () => {
     it('should return current rate usd to uah and exchange date', async () => {
-      const data: Array<IExchangeRate> = [
+      const data: Array<IGetExchangeRate> = [
         {
           r030: 840,
           txt: 'Долар США',
@@ -43,7 +42,7 @@ describe('RateService', () => {
         },
       ];
 
-      const spy = jest.spyOn(httpService, 'get').mockReturnValue(
+      jest.spyOn(httpService, 'get').mockReturnValue(
         of({
           data,
           headers: {},
@@ -58,12 +57,12 @@ describe('RateService', () => {
 
       const currentRate = await rateService.getCurrentRate();
 
-      const response: CurrentRateResponse = {
+      const response: IExchangeRate = {
         rate: 39.17,
         exchangedate: '02.05.2024',
       };
 
-      expect(spy).toHaveBeenCalledTimes(1);
+      expect(httpService.get).toHaveBeenCalledTimes(1);
 
       expect(currentRate).toEqual(response);
     });
