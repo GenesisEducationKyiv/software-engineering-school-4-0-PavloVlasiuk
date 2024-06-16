@@ -8,7 +8,10 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "db:test:up": "docker compose --env-file .testing.env -f docker-compose.test.yml up -d",
+    "db:test:down": "docker compose --env-file .testing.env -f docker-compose.test.yml down",
     "migrate": "npx prisma migrate deploy",
+    "migrate:test": "dotenv -e .testing.env -- npx prisma migrate deploy",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
