@@ -42,5 +42,11 @@ jobs:
       - name: Install Node.js and dependencies
         uses: ./.github/actions/install
 
+      - name: Start PostgreSQL database
+        run: npm run db:test:up
+
+      - name: Run migrations
+        run: npm run migrate:test
+
       - name: Run integration tests
-        run: npm run test:integration:full
+        run: npm run test:integration
