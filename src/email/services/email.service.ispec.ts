@@ -1,12 +1,15 @@
 import { Test } from '@nestjs/testing';
 
 import { EmailService } from './email.service';
-import { NodeMailerService } from './node-mailer.service';
 import { DatabaseModule } from '../../database/database.module';
 import { PrismaService } from '../../database/prisma.service';
 import { IExchangeRate } from '../../rate/interfaces';
 import { SubscribeEmailDto } from '../dtos/subscribe-email.dto';
 import { AlreadySubscribedException } from '../exceptions';
+import {
+  IMailingService,
+  MAILING_SERVICE,
+} from '../interfaces/mailing-service.interface';
 
 describe('EmailService', () => {
   const subscribers: SubscribeEmailDto[] = [
@@ -22,7 +25,7 @@ describe('EmailService', () => {
   ];
 
   let emailService: EmailService;
-  let nodeMailerService: NodeMailerService;
+  let mailingService: IMailingService;
   let prisma: PrismaService;
 
   beforeAll(async () => {
@@ -31,7 +34,7 @@ describe('EmailService', () => {
       providers: [
         EmailService,
         {
-          provide: NodeMailerService,
+          provide: MAILING_SERVICE,
           useValue: {
             sendTemplatedEmail: jest.fn().mockResolvedValue(undefined),
           },
@@ -40,7 +43,7 @@ describe('EmailService', () => {
     }).compile();
 
     emailService = testingModule.get<EmailService>(EmailService);
-    nodeMailerService = testingModule.get<NodeMailerService>(NodeMailerService);
+    mailingService = testingModule.get<IMailingService>(MAILING_SERVICE);
     prisma = testingModule.get<PrismaService>(PrismaService);
 
     await prisma.email.createMany({
@@ -84,17 +87,17 @@ describe('EmailService', () => {
     });
   });
 
-  describe('sendCurrentRate', () => {
+  describe('sendRate', () => {
     it('should get all subscribers from database', async () => {
       const exchangeRate: IExchangeRate = {
         rate: 40.22,
         exchangedate: '2024.06.16',
       };
 
-      await emailService.sendCurrentRate(exchangeRate);
+      await emailService.sendRate(exchangeRate);
 
       for (const { email } of subscribers) {
-        expect(nodeMailerService.sendTemplatedEmail).toHaveBeenCalledWith({
+        expect(mailingService.sendTemplatedEmail).toHaveBeenCalledWith({
           to: email,
           context: {
             rate: exchangeRate.rate,
