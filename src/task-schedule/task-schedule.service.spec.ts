@@ -23,7 +23,7 @@ describe('TaskScheduleService', () => {
         {
           provide: EmailService,
           useValue: {
-            sendCurrentRate: jest.fn(),
+            sendRate: jest.fn(),
           },
         },
       ],
@@ -39,7 +39,7 @@ describe('TaskScheduleService', () => {
     expect(taskScheduleService).toBeDefined();
   });
 
-  describe('sendCurrentRate', () => {
+  describe('sendCurrentRateEmail', () => {
     it('should send current rate to subscribers', async () => {
       const currency: IExchangeRate = {
         rate: 39.414,
@@ -48,7 +48,7 @@ describe('TaskScheduleService', () => {
 
       jest.spyOn(rateService, 'getCurrentRate').mockResolvedValue(currency);
 
-      jest.spyOn(emailService, 'sendCurrentRate').mockResolvedValue(undefined);
+      jest.spyOn(emailService, 'sendRate').mockResolvedValue(undefined);
 
       const response = await taskScheduleService.sendCurrentRateEmail();
 
@@ -56,7 +56,7 @@ describe('TaskScheduleService', () => {
 
       expect(rateService.getCurrentRate).toHaveBeenCalledTimes(1);
 
-      expect(emailService.sendCurrentRate).toHaveBeenCalledTimes(1);
+      expect(emailService.sendRate).toHaveBeenCalledTimes(1);
     });
   });
 });

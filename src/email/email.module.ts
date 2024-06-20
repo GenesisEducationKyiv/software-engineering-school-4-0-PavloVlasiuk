@@ -5,6 +5,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 import { EmailController } from './email.controller';
+import { MAILING_SERVICE } from './interfaces/mailing-service.interface';
 import { EmailService } from './services/email.service';
 import { NodeMailerService } from './services/node-mailer.service';
 import { AppConfigModule } from '../config/app-config.module';
@@ -40,7 +41,10 @@ import { DatabaseModule } from '../database/database.module';
     DatabaseModule,
   ],
   controllers: [EmailController],
-  providers: [NodeMailerService, EmailService],
-  exports: [NodeMailerService, EmailService],
+  providers: [
+    EmailService,
+    { provide: MAILING_SERVICE, useClass: NodeMailerService },
+  ],
+  exports: [EmailService],
 })
 export class EmailModule {}

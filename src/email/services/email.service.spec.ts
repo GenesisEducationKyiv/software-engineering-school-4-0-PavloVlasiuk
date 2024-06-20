@@ -2,16 +2,19 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Email } from '@prisma/client';
 
 import { EmailService } from './email.service';
-import { NodeMailerService } from './node-mailer.service';
 import { EmailRepository } from '../../database/repositories/email.repository';
 import { IExchangeRate } from '../../rate/interfaces';
 import { SubscribeEmailDto } from '../dtos/subscribe-email.dto';
 import { AlreadySubscribedException } from '../exceptions';
+import {
+  IMailingService,
+  MAILING_SERVICE,
+} from '../interfaces/mailing-service.interface';
 
 describe('EmailService', () => {
   let emailService: EmailService;
   let emailRepository: EmailRepository;
-  let nodeMailerService: NodeMailerService;
+  let mailingService: IMailingService;
 
   beforeEach(async () => {
     const testingModule: TestingModule = await Test.createTestingModule({
@@ -26,7 +29,7 @@ describe('EmailService', () => {
           },
         },
         {
-          provide: NodeMailerService,
+          provide: MAILING_SERVICE,
           useValue: {
             sendTemplatedEmail: jest.fn(),
           },
@@ -36,7 +39,7 @@ describe('EmailService', () => {
 
     emailService = testingModule.get<EmailService>(EmailService);
     emailRepository = testingModule.get<EmailRepository>(EmailRepository);
-    nodeMailerService = testingModule.get<NodeMailerService>(NodeMailerService);
+    mailingService = testingModule.get<IMailingService>(MAILING_SERVICE);
   });
 
   it('should be defined', () => {
@@ -86,7 +89,7 @@ describe('EmailService', () => {
     });
   });
 
-  describe('sendCurrentRate', () => {
+  describe('sendRate', () => {
     it('should send current rate to all subscribers', async () => {
       const subscribers: Array<Email> = [
         {
@@ -117,19 +120,19 @@ describe('EmailService', () => {
       jest.spyOn(emailRepository, 'findMany').mockResolvedValue(subscribers);
 
       jest
-        .spyOn(nodeMailerService, 'sendTemplatedEmail')
+        .spyOn(mailingService, 'sendTemplatedEmail')
         .mockResolvedValue(undefined);
 
-      await emailService.sendCurrentRate(currency);
+      await emailService.sendRate(currency);
 
       expect(emailRepository.findMany).toHaveBeenCalledTimes(1);
 
-      expect(nodeMailerService.sendTemplatedEmail).toHaveBeenCalledTimes(
+      expect(mailingService.sendTemplatedEmail).toHaveBeenCalledTimes(
         subscribers.length,
       );
 
       for (const { email } of subscribers) {
-        expect(nodeMailerService.sendTemplatedEmail).toHaveBeenCalledWith({
+        expect(mailingService.sendTemplatedEmail).toHaveBeenCalledWith({
           to: email,
           context: {
             rate: currency.rate,
