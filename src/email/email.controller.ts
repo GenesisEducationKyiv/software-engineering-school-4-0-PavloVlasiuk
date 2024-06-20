@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 
 import { SubscribeEmailDto } from './dtos/subscribe-email.dto';
-import { EmailService } from './email.service';
+import { EmailService } from './services/email.service';
 
 @Controller('email')
 export class EmailController {

@@ -2,19 +2,18 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 
-import { IExchangeRate } from './interfaces/exchange-rate.interface';
+import { IExchangeRate, IGetExchangeRate } from './interfaces';
 import { API_URL } from './rate.constants';
-import { CurrentRateResponse } from './responses/current-rate.response';
 
 @Injectable()
 export class RateService {
   constructor(private readonly httpService: HttpService) {}
 
-  async getCurrentRate(): Promise<CurrentRateResponse> {
+  async getCurrentRate(): Promise<IExchangeRate> {
     const {
       data: [currency],
     } = await firstValueFrom(
-      this.httpService.get<Array<IExchangeRate>>(API_URL),
+      this.httpService.get<Array<IGetExchangeRate>>(API_URL),
     );
 
     return {
