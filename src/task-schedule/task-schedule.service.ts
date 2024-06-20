@@ -16,6 +16,6 @@ export class TaskScheduleService {
   async sendCurrentRateEmail(): Promise<void> {
     const rate = await this.rateService.getCurrentRate();
 
-    await this.emailService.sendCurrentRate(rate);
+    await this.emailService.sendRate(rate);
   }
 }

@@ -1,18 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Email } from '@prisma/client';
 
-import { NodeMailerService } from './node-mailer.service';
 import { EmailRepository } from '../../database/repositories/email.repository';
 import { IExchangeRate } from '../../rate/interfaces';
 import { SubscribeEmailDto } from '../dtos/subscribe-email.dto';
 import { AlreadySubscribedException } from '../exceptions';
+import {
+  IMailingService,
+  MAILING_SERVICE,
+} from '../interfaces/mailing-service.interface';
 import { ISendCurrentRateContext } from '../interfaces/send-email-options.interface';
 
 @Injectable()
 export class EmailService {
   constructor(
     private readonly emailRepository: EmailRepository,
-    private readonly nodeMailerService: NodeMailerService,
+    @Inject(MAILING_SERVICE)
+    private readonly mailingService: IMailingService,
   ) {}
 
   async subscribe({ email }: SubscribeEmailDto): Promise<void> {
@@ -23,7 +27,7 @@ export class EmailService {
     await this.emailRepository.create({ email });
   }
 
-  async sendCurrentRate({ rate }: IExchangeRate): Promise<void> {
+  async sendRate({ rate }: IExchangeRate): Promise<void> {
     const subscribers: Array<Email> = await this.getAllSubscribers();
 
     const context: ISendCurrentRateContext = {
@@ -32,7 +36,7 @@ export class EmailService {
     };
 
     const emailPromises: Array<Promise<void>> = subscribers.map(({ email }) =>
-      this.nodeMailerService.sendTemplatedEmail({
+      this.mailingService.sendTemplatedEmail({
         to: email,
         context,
       }),
