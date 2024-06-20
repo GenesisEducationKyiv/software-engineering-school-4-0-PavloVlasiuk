@@ -1,7 +1,8 @@
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
+import { ExchangeRateAPIException } from './exceptions';
 import { IExchangeRate, IGetExchangeRate } from './interfaces';
 import { RateService } from './rate.service';
 
@@ -65,6 +66,31 @@ describe('RateService', () => {
       expect(httpService.get).toHaveBeenCalledTimes(1);
 
       expect(currentRate).toEqual(response);
+    });
+
+    it('should throw ExhangeRateAPIException cause error from thir party service', async () => {
+      const errorResponse = {
+        response: {
+          status: 429,
+          data: {
+            message: 'Too Many Requests',
+          },
+        },
+      };
+
+      jest
+        .spyOn(httpService, 'get')
+        .mockReturnValue(throwError(() => errorResponse));
+
+      let exception: any;
+
+      try {
+        await rateService.getCurrentRate();
+      } catch (ex: any) {
+        exception = ex;
+      }
+
+      expect(exception).toBeInstanceOf(ExchangeRateAPIException);
     });
   });
 });
