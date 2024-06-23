@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
+import { LoggerModule } from 'nestjs-pino';
 
 import { AppConfigModule } from './config/app-config.module';
 import { DatabaseModule } from './database/database.module';
@@ -15,6 +16,17 @@ import { TaskScheduleModule } from './task-schedule/task-schedule.module';
     TaskScheduleModule,
     ScheduleModule.forRoot(),
     AppConfigModule,
+    LoggerModule.forRoot({
+      pinoHttp: {
+        autoLogging: false,
+        transport: {
+          target: 'pino-pretty',
+          options: {
+            singleLine: true,
+          },
+        },
+      },
+    }),
   ],
 })
 export class AppModule {}

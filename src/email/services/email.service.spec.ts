@@ -114,7 +114,7 @@ describe('EmailService', () => {
 
       const currency: IExchangeRate = {
         rate: 37.414,
-        exchangedate: '15.05.2024',
+        exchangeDate: new Date('2024-06-23').toISOString(),
       };
 
       jest.spyOn(emailRepository, 'findMany').mockResolvedValue(subscribers);

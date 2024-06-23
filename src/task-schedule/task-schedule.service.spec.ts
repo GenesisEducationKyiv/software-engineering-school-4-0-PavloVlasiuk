@@ -43,7 +43,7 @@ describe('TaskScheduleService', () => {
     it('should send current rate to subscribers', async () => {
       const currency: IExchangeRate = {
         rate: 39.414,
-        exchangedate: '16.06.2024',
+        exchangeDate: new Date('2024-06-16').toISOString(),
       };
 
       jest.spyOn(rateService, 'getCurrentRate').mockResolvedValue(currency);
