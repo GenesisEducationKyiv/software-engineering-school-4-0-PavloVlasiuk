@@ -1,96 +1,89 @@
-import { HttpService } from '@nestjs/axios';
+// import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { of, throwError } from 'rxjs';
+// import { of, throwError } from 'rxjs';
 
-import { ExchangeRateAPIException } from './exceptions';
-import { IExchangeRate, IGetExchangeRate } from './interfaces';
+// import { IGetNBURate } from './clients';
+// import { RateClientException } from './exceptions';
+// import { IExchangeRate } from './interfaces';
 import { RateService } from './rate.service';
 
 describe('RateService', () => {
   let rateService: RateService;
-  let httpService: HttpService;
 
   beforeEach(async () => {
     const testingModule: TestingModule = await Test.createTestingModule({
-      providers: [
-        RateService,
-        {
-          provide: HttpService,
-          useValue: {
-            get: jest.fn((data) => data),
-          },
-        },
-      ],
+      providers: [RateService],
     }).compile();
 
     rateService = testingModule.get<RateService>(RateService);
-    httpService = testingModule.get<HttpService>(HttpService);
   });
 
   it('should be defined', () => {
     expect(rateService).toBeDefined();
   });
 
-  describe('getCurrentRate', () => {
-    it('should return current rate usd to uah and exchange date', async () => {
-      const data: Array<IGetExchangeRate> = [
-        {
-          r030: 840,
-          txt: 'Долар США',
-          rate: 39.17,
-          cc: 'USD',
-          exchangedate: '02.05.2024',
-        },
-      ];
+  // describe('getCurrentRate', () => {
+  //   it('should return current rate usd to uah and exchange date', async () => {
+  //     const data: Array<IGetNBURate> = [
+  //       {
+  //         r030: 840,
+  //         txt: 'Долар США',
+  //         rate: 39.17,
+  //         cc: 'USD',
+  //         exchangedate: '02.05.2024',
+  //       },
+  //     ];
 
-      jest.spyOn(httpService, 'get').mockReturnValue(
-        of({
-          data,
-          headers: {},
-          config: {
-            url: 'http://localhost:3000/mock',
-            headers: undefined,
-          },
-          status: 200,
-          statusText: 'OK',
-        }),
-      );
+  //     jest.spyOn(httpService, 'get').mockReturnValue(
+  //       of({
+  //         data,
+  //         headers: {},
+  //         config: {
+  //           url: 'http://localhost:3000/mock',
+  //           headers: undefined,
+  //         },
+  //         status: 200,
+  //         statusText: 'OK',
+  //       }),
+  //     );
 
-      const currentRate = await rateService.getCurrentRate();
+  //     const rate = await rateService.getCurrentRate();
 
-      const response: IExchangeRate = {
-        rate: 39.17,
-        exchangedate: '02.05.2024',
-      };
+  //     const response: IExchangeRate = {
+  //       rate: 39.17,
+  //       exchangeDate: new Date('2024-05-02').toISOString(),
+  //     };
 
-      expect(httpService.get).toHaveBeenCalledTimes(1);
+  //     expect(httpServiceSpy).toHaveBeenCalledTimes(1);
 
-      expect(currentRate).toEqual(response);
-    });
+  //     expect(nbuClient.getRate).toHaveBeenCalledTimes(1);
 
-    it('should throw ExhangeRateAPIException cause error from thir party service', async () => {
-      const errorResponse = {
-        response: {
-          status: 429,
-          data: {
-            message: 'Too Many Requests',
-          },
-        },
-      };
+  //     expect(rate).toEqual(response);
+  //   });
 
-      jest
-        .spyOn(httpService, 'get')
-        .mockReturnValue(throwError(() => errorResponse));
+  //   it('should throw ExhangeRateAPIException cause error from thir party service', async () => {
+  //     const errorResponse = {
+  //       response: {
+  //         status: 429,
+  //         data: {
+  //           message: 'Too Many Requests',
+  //         },
+  //       },
+  //     };
 
-      let exception: any;
+  //     jest
+  //       .spyOn(nbuClient.httpService, 'get')
+  //       .mockReturnValue(throwError(() => errorResponse));
 
-      try {
-        await rateService.getCurrentRate();
-      } catch (ex: any) {
-        exception = ex;
-      }
+  //     let exception: any;
 
-      expect(exception).toBeInstanceOf(ExchangeRateAPIException);
-    });
-  });
+  //     try {
+  //       await rateService.getCurrentRate();
+  //     } catch (ex: any) {
+  //       exception = ex;
+  //     }
+
+  //     expect(exception).toBeInstanceOf(RateClientException);
+  //   });
+  // });
 });

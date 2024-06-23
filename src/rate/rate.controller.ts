@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 
-import { IExchangeRate } from './interfaces';
+import { RateResponseDto } from './dtos/responses/rate.response.dto';
 import { RateService } from './rate.service';
 
 @Controller('rate')
@@ -8,7 +8,9 @@ export class RateController {
   constructor(private readonly rateService: RateService) {}
 
   @Get()
-  async getCurrentRate(): Promise<IExchangeRate> {
-    return await this.rateService.getCurrentRate();
+  async getCurrentRate(): Promise<RateResponseDto> {
+    const rate = await this.rateService.getCurrentRate();
+
+    return new RateResponseDto(rate);
   }
 }

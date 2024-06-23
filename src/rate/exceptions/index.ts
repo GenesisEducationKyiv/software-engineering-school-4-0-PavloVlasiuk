@@ -1,1 +1,1 @@
-export * from './exchange-rate-api.exception';
+export * from './rate-client.exception';

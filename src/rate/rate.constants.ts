@@ -1,2 +1,7 @@
-export const API_URL =
-  'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchangenew?valcode=USD&json';
+export const SECOND = 1000;
+
+export const AXIOS_TIMEOUT = SECOND * 3;
+
+export const DOLLAR_ABBREVIATION = 'USD';
+
+export const DOLLAR_CODE = 840;
