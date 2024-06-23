@@ -1,4 +1,5 @@
 import { HttpService } from '@nestjs/axios';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 import { AppConfigService } from '../../config/app-config.service';
 import { RateClientException } from '../exceptions';
@@ -11,6 +12,8 @@ export abstract class AbstractRateClient implements IRateClient {
   constructor(
     protected readonly httpService: HttpService,
     protected readonly appConfigService: AppConfigService,
+    @InjectPinoLogger()
+    protected readonly logger: PinoLogger,
   ) {}
 
   setNext(client: IRateClient): IRateClient {

@@ -1,5 +1,6 @@
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
+import { LoggerModule } from 'nestjs-pino';
 import { of, throwError } from 'rxjs';
 
 import { IGetNBURate, NBUClient } from './clients';
@@ -15,7 +16,7 @@ describe('RateService', () => {
 
   beforeEach(async () => {
     const testingModule: TestingModule = await Test.createTestingModule({
-      imports: [HttpModule, AppConfigModule],
+      imports: [HttpModule, AppConfigModule, LoggerModule.forRoot()],
       providers: [
         RateService,
         NBUClient,

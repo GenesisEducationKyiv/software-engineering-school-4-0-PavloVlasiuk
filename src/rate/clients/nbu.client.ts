@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';
+import { PinoLogger } from 'nestjs-pino';
 import { catchError, firstValueFrom } from 'rxjs';
 
 import { AbstractRateClient } from './abstract-rate.client';
@@ -21,8 +22,9 @@ export class NBUClient extends AbstractRateClient {
   constructor(
     readonly httpService: HttpService,
     readonly appConfigService: AppConfigService,
+    readonly logger: PinoLogger,
   ) {
-    super(httpService, appConfigService);
+    super(httpService, appConfigService, logger);
   }
 
   async getRate(): Promise<IExchangeRate> {
@@ -34,10 +36,14 @@ export class NBUClient extends AbstractRateClient {
       } = await firstValueFrom(
         this.httpService.get<Array<IGetNBURate>>(apiUrl).pipe(
           catchError((error: AxiosError) => {
-            console.error(error.response.data);
+            this.logger.error(error.response.data);
             throw new RateClientException();
           }),
         ),
+      );
+
+      this.logger.info(
+        `bank.gov.ua - Response: ${JSON.stringify({ data: [currency] })}`,
       );
 
       return {

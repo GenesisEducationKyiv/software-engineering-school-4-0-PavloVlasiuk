@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';
+import { PinoLogger } from 'nestjs-pino';
 import { catchError, firstValueFrom } from 'rxjs';
 
 import { AbstractRateClient } from './abstract-rate.client';
@@ -23,8 +24,9 @@ export class MonobankClient extends AbstractRateClient {
   constructor(
     readonly httpService: HttpService,
     readonly appConfigService: AppConfigService,
+    readonly logger: PinoLogger,
   ) {
-    super(httpService, appConfigService);
+    super(httpService, appConfigService, logger);
   }
 
   async getRate(): Promise<IExchangeRate> {
@@ -36,10 +38,14 @@ export class MonobankClient extends AbstractRateClient {
       const { data } = await firstValueFrom(
         this.httpService.get<Array<IGetMonobankRate>>(apiUrl).pipe(
           catchError((error: AxiosError) => {
-            console.error(error.response.data);
+            this.logger.error(error.response.data);
             throw new RateClientException();
           }),
         ),
+      );
+
+      this.logger.info(
+        `api.monobank.ua - Response: ${JSON.stringify({ data })}`,
       );
 
       const currency = data.find((c) => c.currencyCodeA === DOLLAR_CODE);
