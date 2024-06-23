@@ -4,6 +4,7 @@ import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 
 import { AbstractRateClient } from './abstract-rate.client';
+import { AppConfigService } from '../../config/app-config.service';
 import { RateClientException } from '../exceptions';
 import { IExchangeRate } from '../interfaces';
 
@@ -19,17 +20,21 @@ export interface IGetCurrencybeaconRate {
 
 @Injectable()
 export class CurrencybeaconClient extends AbstractRateClient {
-  private readonly apiUrl =
-    'https://api.currencybeacon.com/v1/latest?api_key=3mmxKhizwvv45RgChliXaxUIY3aSkKO1&base=USD&symbols=UAH';
-
-  constructor(readonly httpService: HttpService) {
-    super(httpService);
+  constructor(
+    readonly httpService: HttpService,
+    readonly appConfigService: AppConfigService,
+  ) {
+    super(httpService, appConfigService);
   }
 
   async getRate(): Promise<IExchangeRate> {
+    const apiUrl = this.appConfigService.get<string>(
+      'rate.clients.currencybeaconApiUrl',
+    );
+
     try {
       const { data } = await firstValueFrom(
-        this.httpService.get<IGetCurrencybeaconRate>(this.apiUrl).pipe(
+        this.httpService.get<IGetCurrencybeaconRate>(apiUrl).pipe(
           catchError((error: AxiosError) => {
             console.error(error.response.data);
             throw new RateClientException();

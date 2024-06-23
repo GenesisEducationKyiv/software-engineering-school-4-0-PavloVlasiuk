@@ -4,6 +4,7 @@ import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 
 import { AbstractRateClient } from './abstract-rate.client';
+import { AppConfigService } from '../../config/app-config.service';
 import { RateClientException } from '../exceptions';
 import { IExchangeRate } from '../interfaces';
 import { DOLLAR_CODE, SECOND } from '../rate.constants';
@@ -19,16 +20,21 @@ export interface IGetMonobankRate {
 
 @Injectable()
 export class MonobankClient extends AbstractRateClient {
-  private readonly apiUrl = 'https://api.monobank.ua/bank/currency';
-
-  constructor(readonly httpService: HttpService) {
-    super(httpService);
+  constructor(
+    readonly httpService: HttpService,
+    readonly appConfigService: AppConfigService,
+  ) {
+    super(httpService, appConfigService);
   }
 
   async getRate(): Promise<IExchangeRate> {
+    const apiUrl = this.appConfigService.get<string>(
+      'rate.clients.monobankApiUrl',
+    );
+
     try {
       const { data } = await firstValueFrom(
-        this.httpService.get<Array<IGetMonobankRate>>(this.apiUrl).pipe(
+        this.httpService.get<Array<IGetMonobankRate>>(apiUrl).pipe(
           catchError((error: AxiosError) => {
             console.error(error.response.data);
             throw new RateClientException();

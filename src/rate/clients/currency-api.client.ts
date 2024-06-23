@@ -4,6 +4,7 @@ import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 
 import { AbstractRateClient } from './abstract-rate.client';
+import { AppConfigService } from '../../config/app-config.service';
 import { RateClientException } from '../exceptions';
 import { IExchangeRate } from '../interfaces';
 
@@ -16,17 +17,21 @@ export interface IGetCurrencyAPIRate {
 
 @Injectable()
 export class CurrencyAPIClient extends AbstractRateClient {
-  private readonly apiUrl =
-    'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json';
-
-  constructor(readonly httpService: HttpService) {
-    super(httpService);
+  constructor(
+    readonly httpService: HttpService,
+    readonly appConfigService: AppConfigService,
+  ) {
+    super(httpService, appConfigService);
   }
 
   async getRate(): Promise<IExchangeRate> {
+    const apiUrl = this.appConfigService.get<string>(
+      'rate.clients.currencyApiUrl',
+    );
+
     try {
       const { data } = await firstValueFrom(
-        this.httpService.get<IGetCurrencyAPIRate>(this.apiUrl).pipe(
+        this.httpService.get<IGetCurrencyAPIRate>(apiUrl).pipe(
           catchError((error: AxiosError) => {
             console.error(error.response.data);
             throw new RateClientException();

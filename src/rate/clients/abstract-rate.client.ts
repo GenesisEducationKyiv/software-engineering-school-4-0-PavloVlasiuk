@@ -1,16 +1,17 @@
 import { HttpService } from '@nestjs/axios';
 
+import { AppConfigService } from '../../config/app-config.service';
 import { RateClientException } from '../exceptions';
 import { IExchangeRate } from '../interfaces';
 import { IRateClient } from '../interfaces/rate-client.interface';
-import { AXIOS_TIMEOUT } from '../rate.constants';
 
 export abstract class AbstractRateClient implements IRateClient {
   private next: IRateClient;
 
-  constructor(protected readonly httpService: HttpService) {
-    this.httpService.axiosRef.defaults.timeout = AXIOS_TIMEOUT;
-  }
+  constructor(
+    protected readonly httpService: HttpService,
+    protected readonly appConfigService: AppConfigService,
+  ) {}
 
   setNext(client: IRateClient): IRateClient {
     this.next = client;

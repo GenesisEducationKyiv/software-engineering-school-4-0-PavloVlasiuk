@@ -4,6 +4,7 @@ import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 
 import { AbstractRateClient } from './abstract-rate.client';
+import { AppConfigService } from '../../config/app-config.service';
 import { RateClientException } from '../exceptions';
 import { IExchangeRate } from '../interfaces';
 import { DOLLAR_ABBREVIATION } from '../rate.constants';
@@ -17,17 +18,21 @@ export interface IGetPrivatbankRate {
 
 @Injectable()
 export class PrivatbankClient extends AbstractRateClient {
-  private readonly apiUrl =
-    'https://api.privatbank.ua/p24api/pubinfo?exchange&coursid=5';
-
-  constructor(readonly httpService: HttpService) {
-    super(httpService);
+  constructor(
+    readonly httpService: HttpService,
+    readonly appConfigService: AppConfigService,
+  ) {
+    super(httpService, appConfigService);
   }
 
   async getRate(): Promise<IExchangeRate> {
+    const apiUrl = this.appConfigService.get<string>(
+      'rate.clients.privatbankApiUrl',
+    );
+
     try {
       const { data } = await firstValueFrom(
-        this.httpService.get<Array<IGetPrivatbankRate>>(this.apiUrl).pipe(
+        this.httpService.get<Array<IGetPrivatbankRate>>(apiUrl).pipe(
           catchError((error: AxiosError) => {
             console.error(error.response.data);
             throw new RateClientException();

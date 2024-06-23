@@ -11,9 +11,20 @@ import {
 import { RATE_CLIENT_TOKEN } from './interfaces';
 import { RateController } from './rate.controller';
 import { RateService } from './rate.service';
+import { AppConfigModule } from '../config/app-config.module';
+import { AppConfigService } from '../config/app-config.service';
 
 @Module({
-  imports: [HttpModule],
+  imports: [
+    HttpModule.registerAsync({
+      imports: [AppConfigModule],
+      useFactory: async (config: AppConfigService) => ({
+        timeout: config.get<number>('http.request.timeout'),
+      }),
+      inject: [AppConfigService],
+    }),
+    AppConfigModule,
+  ],
   controllers: [RateController],
   providers: [
     RateService,
