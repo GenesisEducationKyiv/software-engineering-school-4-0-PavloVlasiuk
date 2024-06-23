@@ -6,6 +6,7 @@ import { IGetNBURate, NBUClient } from './clients';
 import { RateClientException } from './exceptions';
 import { IExchangeRate, IRateClient, RATE_CLIENT_TOKEN } from './interfaces';
 import { RateService } from './rate.service';
+import { AppConfigModule } from '../config/app-config.module';
 
 describe('RateService', () => {
   let rateService: RateService;
@@ -14,7 +15,7 @@ describe('RateService', () => {
 
   beforeEach(async () => {
     const testingModule: TestingModule = await Test.createTestingModule({
-      imports: [HttpModule],
+      imports: [HttpModule, AppConfigModule],
       providers: [
         RateService,
         NBUClient,
