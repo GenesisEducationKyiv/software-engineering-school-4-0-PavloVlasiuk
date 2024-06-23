@@ -9,8 +9,6 @@ export class RateController {
 
   @Get()
   async getCurrentRate(): Promise<RateResponseDto> {
-    const rate = await this.rateService.getCurrentRate();
-
-    return new RateResponseDto(rate);
+    return await this.rateService.getCurrentRate();
   }
 }

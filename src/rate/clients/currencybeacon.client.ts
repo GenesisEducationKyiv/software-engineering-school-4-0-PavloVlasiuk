@@ -1,3 +1,5 @@
+import { HttpService } from '@nestjs/axios';
+import { Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 
@@ -15,9 +17,14 @@ export interface IGetCurrencybeaconRate {
   };
 }
 
+@Injectable()
 export class CurrencybeaconClient extends AbstractRateClient {
   private readonly apiUrl =
     'https://api.currencybeacon.com/v1/latest?api_key=3mmxKhizwvv45RgChliXaxUIY3aSkKO1&base=USD&symbols=UAH';
+
+  constructor(readonly httpService: HttpService) {
+    super(httpService);
+  }
 
   async getRate(): Promise<IExchangeRate> {
     try {

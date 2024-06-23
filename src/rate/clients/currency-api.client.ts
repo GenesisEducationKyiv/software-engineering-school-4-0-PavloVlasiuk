@@ -1,3 +1,5 @@
+import { HttpService } from '@nestjs/axios';
+import { Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 
@@ -12,9 +14,14 @@ export interface IGetCurrencyAPIRate {
   };
 }
 
+@Injectable()
 export class CurrencyAPIClient extends AbstractRateClient {
   private readonly apiUrl =
     'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json';
+
+  constructor(readonly httpService: HttpService) {
+    super(httpService);
+  }
 
   async getRate(): Promise<IExchangeRate> {
     try {

@@ -1,3 +1,5 @@
+import { HttpService } from '@nestjs/axios';
+import { Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 
@@ -15,8 +17,13 @@ export interface IGetMonobankRate {
   rateCross: number;
 }
 
+@Injectable()
 export class MonobankClient extends AbstractRateClient {
   private readonly apiUrl = 'https://api.monobank.ua/bank/currency';
+
+  constructor(readonly httpService: HttpService) {
+    super(httpService);
+  }
 
   async getRate(): Promise<IExchangeRate> {
     try {

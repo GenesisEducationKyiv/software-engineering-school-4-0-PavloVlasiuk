@@ -6,13 +6,9 @@ import { IRateClient } from '../interfaces/rate-client.interface';
 import { AXIOS_TIMEOUT } from '../rate.constants';
 
 export abstract class AbstractRateClient implements IRateClient {
-  httpService: HttpService;
-
   private next: IRateClient;
 
-  constructor() {
-    this.httpService = new HttpService();
-
+  constructor(protected readonly httpService: HttpService) {
     this.httpService.axiosRef.defaults.timeout = AXIOS_TIMEOUT;
   }
 

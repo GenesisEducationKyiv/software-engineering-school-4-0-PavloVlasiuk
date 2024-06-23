@@ -1,3 +1,5 @@
+import { HttpService } from '@nestjs/axios';
+import { Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 
@@ -13,9 +15,14 @@ export interface IGetNBURate {
   exchangedate: string;
 }
 
+@Injectable()
 export class NBUClient extends AbstractRateClient {
   private readonly apiUrl =
     'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchangenew?valcode=USD&json';
+
+  constructor(readonly httpService: HttpService) {
+    super(httpService);
+  }
 
   async getRate(): Promise<IExchangeRate> {
     try {

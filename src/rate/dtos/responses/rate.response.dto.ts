@@ -5,7 +5,7 @@ import { IExchangeRate } from '../../../rate/interfaces';
 @Exclude()
 export class RateResponseDto {
   @Expose()
-  rate: string;
+  rate: number;
 
   @Expose()
   exchangeDate: string;

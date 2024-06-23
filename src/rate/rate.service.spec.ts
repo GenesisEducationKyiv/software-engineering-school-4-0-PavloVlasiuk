@@ -1,89 +1,114 @@
-// import { HttpService } from '@nestjs/axios';
+import { HttpModule, HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-// import { of, throwError } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
-// import { IGetNBURate } from './clients';
-// import { RateClientException } from './exceptions';
-// import { IExchangeRate } from './interfaces';
+import { IGetNBURate, NBUClient } from './clients';
+import { RateClientException } from './exceptions';
+import { IExchangeRate, IRateClient, RATE_CLIENT_TOKEN } from './interfaces';
 import { RateService } from './rate.service';
 
 describe('RateService', () => {
   let rateService: RateService;
+  let rateClient: IRateClient;
+  let httpService: HttpService;
 
   beforeEach(async () => {
     const testingModule: TestingModule = await Test.createTestingModule({
-      providers: [RateService],
-    }).compile();
+      imports: [HttpModule],
+      providers: [
+        RateService,
+        NBUClient,
+        {
+          provide: RATE_CLIENT_TOKEN,
+          useFactory(nbuClient: NBUClient) {
+            return nbuClient;
+          },
+          inject: [NBUClient],
+        },
+      ],
+    })
+      .useMocker((token) => {
+        if (token instanceof HttpService) {
+          return { get: jest.fn() };
+        }
+
+        return {};
+      })
+      .compile();
 
     rateService = testingModule.get<RateService>(RateService);
+    rateClient = testingModule.get<IRateClient>(RATE_CLIENT_TOKEN);
+    httpService = testingModule.get<HttpService>(HttpService);
   });
 
   it('should be defined', () => {
     expect(rateService).toBeDefined();
   });
 
-  // describe('getCurrentRate', () => {
-  //   it('should return current rate usd to uah and exchange date', async () => {
-  //     const data: Array<IGetNBURate> = [
-  //       {
-  //         r030: 840,
-  //         txt: 'Долар США',
-  //         rate: 39.17,
-  //         cc: 'USD',
-  //         exchangedate: '02.05.2024',
-  //       },
-  //     ];
+  describe('getCurrentRate', () => {
+    it('should return current rate usd to uah and exchange date', async () => {
+      const data: Array<IGetNBURate> = [
+        {
+          r030: 840,
+          txt: 'Долар США',
+          rate: 39.17,
+          cc: 'USD',
+          exchangedate: '02.05.2024',
+        },
+      ];
 
-  //     jest.spyOn(httpService, 'get').mockReturnValue(
-  //       of({
-  //         data,
-  //         headers: {},
-  //         config: {
-  //           url: 'http://localhost:3000/mock',
-  //           headers: undefined,
-  //         },
-  //         status: 200,
-  //         statusText: 'OK',
-  //       }),
-  //     );
+      jest.spyOn(httpService, 'get').mockReturnValue(
+        of({
+          data,
+          headers: {},
+          config: {
+            url: 'http://localhost:3000/mock',
+            headers: undefined,
+          },
+          status: 200,
+          statusText: 'OK',
+        }),
+      );
 
-  //     const rate = await rateService.getCurrentRate();
+      jest.spyOn(rateClient, 'getRate');
 
-  //     const response: IExchangeRate = {
-  //       rate: 39.17,
-  //       exchangeDate: new Date('2024-05-02').toISOString(),
-  //     };
+      const rate = await rateService.getCurrentRate();
 
-  //     expect(httpServiceSpy).toHaveBeenCalledTimes(1);
+      const response: IExchangeRate = {
+        rate: 39.17,
+        exchangeDate: new Date('2024-05-02').toISOString(),
+      };
 
-  //     expect(nbuClient.getRate).toHaveBeenCalledTimes(1);
+      expect(httpService.get).toHaveBeenCalledTimes(1);
 
-  //     expect(rate).toEqual(response);
-  //   });
+      expect(rateClient.getRate).toHaveBeenCalledTimes(1);
 
-  //   it('should throw ExhangeRateAPIException cause error from thir party service', async () => {
-  //     const errorResponse = {
-  //       response: {
-  //         status: 429,
-  //         data: {
-  //           message: 'Too Many Requests',
-  //         },
-  //       },
-  //     };
+      expect(rate).toEqual(response);
+    });
 
-  //     jest
-  //       .spyOn(nbuClient.httpService, 'get')
-  //       .mockReturnValue(throwError(() => errorResponse));
+    it('should throw RateClientException cause all client are not able to provide exchange rate', async () => {
+      const errorResponse = {
+        response: {
+          status: 429,
+          data: {
+            message: 'Too Many Requests',
+          },
+        },
+      };
 
-  //     let exception: any;
+      jest
+        .spyOn(httpService, 'get')
+        .mockReturnValue(throwError(() => errorResponse));
 
-  //     try {
-  //       await rateService.getCurrentRate();
-  //     } catch (ex: any) {
-  //       exception = ex;
-  //     }
+      let exception: any;
 
-  //     expect(exception).toBeInstanceOf(RateClientException);
-  //   });
-  // });
+      try {
+        await rateService.getCurrentRate();
+      } catch (ex: any) {
+        exception = ex;
+      }
+
+      expect(exception).toBeInstanceOf(RateClientException);
+    });
+  });
 });

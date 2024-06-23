@@ -1,3 +1,5 @@
+import { HttpService } from '@nestjs/axios';
+import { Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 
@@ -13,9 +15,14 @@ export interface IGetPrivatbankRate {
   sale: string;
 }
 
+@Injectable()
 export class PrivatbankClient extends AbstractRateClient {
   private readonly apiUrl =
     'https://api.privatbank.ua/p24api/pubinfo?exchange&coursid=5';
+
+  constructor(readonly httpService: HttpService) {
+    super(httpService);
+  }
 
   async getRate(): Promise<IExchangeRate> {
     try {

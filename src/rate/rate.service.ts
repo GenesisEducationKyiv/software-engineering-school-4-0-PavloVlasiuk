@@ -1,30 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
-import {
-  NBUClient,
-  PrivatbankClient,
-  MonobankClient,
-  CurrencybeaconClient,
-  CurrencyAPIClient,
-} from './clients';
+import { RateResponseDto } from './dtos/responses/rate.response.dto';
 import { IExchangeRate } from './interfaces';
-import { IRateClient } from './interfaces/rate-client.interface';
+import {
+  IRateClient,
+  RATE_CLIENT_TOKEN,
+} from './interfaces/rate-client.interface';
 
 @Injectable()
 export class RateService {
-  private rateClient: IRateClient;
-
-  constructor() {
-    this.rateClient = new NBUClient();
-
-    this.rateClient
-      .setNext(new PrivatbankClient())
-      .setNext(new MonobankClient())
-      .setNext(new CurrencybeaconClient())
-      .setNext(new CurrencyAPIClient());
-  }
+  constructor(
+    @Inject(RATE_CLIENT_TOKEN) private readonly rateClient: IRateClient,
+  ) {}
 
   async getCurrentRate(): Promise<IExchangeRate> {
-    return this.rateClient.getRate();
+    const rate = await this.rateClient.getRate();
+
+    return new RateResponseDto(rate);
   }
 }

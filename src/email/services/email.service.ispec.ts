@@ -91,7 +91,7 @@ describe('EmailService', () => {
     it('should get all subscribers from database', async () => {
       const exchangeRate: IExchangeRate = {
         rate: 40.22,
-        exchangedate: '2024.06.16',
+        exchangeDate: new Date('2024-06-16').toISOString(),
       };
 
       await emailService.sendRate(exchangeRate);
