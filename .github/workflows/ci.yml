@@ -1,11 +1,11 @@
 name: Node.js CI
 
-on: [ push, pull_request] 
+on: [push, pull_request]
 
 jobs:
   lint:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,11 +18,11 @@ jobs:
 
   build-and-test:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        
+
       - name: Install Node.js and dependencies
         uses: ./.github/actions/install
 
@@ -30,4 +30,23 @@ jobs:
         run: npm run build --if-present
 
       - name: Run tests
-        run: npm test
+        run: npm run test:unit
+
+  integration-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Node.js and dependencies
+        uses: ./.github/actions/install
+
+      - name: Start PostgreSQL database
+        run: npm run db:test:up
+
+      - name: Run migrations
+        run: npm run migrate:test
+
+      - name: Run integration tests
+        run: npm run test:integration
