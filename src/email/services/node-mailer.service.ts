@@ -4,8 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 
 import { DEFAULT_EMAIL_SUBJECT } from '../email.constants';
-import { IMailingService } from '../interfaces/mailing-service.interface';
-import { ISendEmailOptions } from '../interfaces/send-email-options.interface';
+import { IMailingService, ISendEmailOptions } from '../interfaces';
 
 @Injectable()
 export class NodeMailerService implements IMailingService {

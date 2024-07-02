@@ -7,9 +7,11 @@ import { IExchangeRate } from '../../rate/interfaces';
 import { SubscribeEmailDto } from '../dtos/subscribe-email.dto';
 import { AlreadySubscribedException } from '../exceptions';
 import {
+  EMAIL_REPOSITORY,
   IMailingService,
   MAILING_SERVICE,
-} from '../interfaces/mailing-service.interface';
+} from '../interfaces';
+import { EmailRepository } from '../repositories/email.repository';
 
 describe('EmailService', () => {
   const subscribers: SubscribeEmailDto[] = [
@@ -33,6 +35,7 @@ describe('EmailService', () => {
       imports: [DatabaseModule],
       providers: [
         EmailService,
+        { provide: EMAIL_REPOSITORY, useClass: EmailRepository },
         {
           provide: MAILING_SERVICE,
           useValue: {
