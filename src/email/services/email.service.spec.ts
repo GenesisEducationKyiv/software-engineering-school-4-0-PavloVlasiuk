@@ -7,20 +7,22 @@ import { SubscribeEmailDto } from '../dtos/subscribe-email.dto';
 import { AlreadySubscribedException } from '../exceptions';
 import {
   EMAIL_REPOSITORY,
+  EMAIL_SERVICE,
   IEmailRepository,
+  IEmailService,
   IMailingService,
   MAILING_SERVICE,
 } from '../interfaces';
 
 describe('EmailService', () => {
-  let emailService: EmailService;
+  let emailService: IEmailService;
   let emailRepository: IEmailRepository;
   let mailingService: IMailingService;
 
   beforeEach(async () => {
     const testingModule: TestingModule = await Test.createTestingModule({
       providers: [
-        EmailService,
+        { provide: EMAIL_SERVICE, useClass: EmailService },
         {
           provide: EMAIL_REPOSITORY,
           useValue: {
@@ -38,7 +40,7 @@ describe('EmailService', () => {
       ],
     }).compile();
 
-    emailService = testingModule.get<EmailService>(EmailService);
+    emailService = testingModule.get<IEmailService>(EMAIL_SERVICE);
     emailRepository = testingModule.get<IEmailRepository>(EMAIL_REPOSITORY);
     mailingService = testingModule.get<IMailingService>(MAILING_SERVICE);
   });

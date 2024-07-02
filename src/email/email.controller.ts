@@ -1,11 +1,14 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Inject, Post } from '@nestjs/common';
 
 import { SubscribeEmailDto } from './dtos/subscribe-email.dto';
-import { EmailService } from './services/email.service';
+import { EMAIL_SERVICE, IEmailService } from './interfaces';
 
 @Controller('email')
 export class EmailController {
-  constructor(private readonly emailService: EmailService) {}
+  constructor(
+    @Inject(EMAIL_SERVICE)
+    private readonly emailService: IEmailService,
+  ) {}
 
   @Post('subscribe')
   async subscribe(@Body() subscribeEmailDto: SubscribeEmailDto): Promise<void> {

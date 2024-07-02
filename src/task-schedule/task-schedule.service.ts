@@ -1,15 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
+import { ITaskScheduleService } from './interfaces';
 import { TIMEZONE } from './task-schedule.constants';
-import { EmailService } from '../email/services/email.service';
-import { RateService } from '../rate/rate.service';
+import { EMAIL_SERVICE, IEmailService } from '../email/interfaces';
+import { IRateService, RATE_SERVICE } from '../rate/interfaces';
 
 @Injectable()
-export class TaskScheduleService {
+export class TaskScheduleService implements ITaskScheduleService {
   constructor(
-    private readonly emailService: EmailService,
-    private readonly rateService: RateService,
+    @Inject(EMAIL_SERVICE)
+    private readonly emailService: IEmailService,
+    @Inject(RATE_SERVICE)
+    private readonly rateService: IRateService,
   ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_10AM, { timeZone: TIMEZONE })

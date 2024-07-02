@@ -10,10 +10,11 @@ import {
   MAILING_SERVICE,
   ISendCurrentRateContext,
   EMAIL_REPOSITORY,
+  IEmailService,
 } from '../interfaces';
 
 @Injectable()
-export class EmailService {
+export class EmailService implements IEmailService {
   constructor(
     @Inject(EMAIL_REPOSITORY)
     private readonly emailRepository: IEmailRepository,
