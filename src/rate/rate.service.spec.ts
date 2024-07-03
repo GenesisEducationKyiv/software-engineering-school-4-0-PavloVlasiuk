@@ -1,29 +1,45 @@
-import { HttpService } from '@nestjs/axios';
+import { HttpModule, HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
+import { LoggerModule } from 'nestjs-pino';
 import { of, throwError } from 'rxjs';
 
-import { ExchangeRateAPIException } from './exceptions';
-import { IExchangeRate, IGetExchangeRate } from './interfaces';
+import { IGetNBURate, NBUClient } from './clients';
+import { RateClientException } from './exceptions';
+import { IExchangeRate, IRateClient, RATE_CLIENT_TOKEN } from './interfaces';
 import { RateService } from './rate.service';
+import { AppConfigModule } from '../config/app-config.module';
 
 describe('RateService', () => {
   let rateService: RateService;
+  let rateClient: IRateClient;
   let httpService: HttpService;
 
   beforeEach(async () => {
     const testingModule: TestingModule = await Test.createTestingModule({
+      imports: [HttpModule, AppConfigModule, LoggerModule.forRoot()],
       providers: [
         RateService,
+        NBUClient,
         {
-          provide: HttpService,
-          useValue: {
-            get: jest.fn((data) => data),
+          provide: RATE_CLIENT_TOKEN,
+          useFactory(nbuClient: NBUClient) {
+            return nbuClient;
           },
+          inject: [NBUClient],
         },
       ],
-    }).compile();
+    })
+      .useMocker((token) => {
+        if (token instanceof HttpService) {
+          return { get: jest.fn() };
+        }
+
+        return {};
+      })
+      .compile();
 
     rateService = testingModule.get<RateService>(RateService);
+    rateClient = testingModule.get<IRateClient>(RATE_CLIENT_TOKEN);
     httpService = testingModule.get<HttpService>(HttpService);
   });
 
@@ -33,7 +49,7 @@ describe('RateService', () => {
 
   describe('getCurrentRate', () => {
     it('should return current rate usd to uah and exchange date', async () => {
-      const data: Array<IGetExchangeRate> = [
+      const data: Array<IGetNBURate> = [
         {
           r030: 840,
           txt: 'Долар США',
@@ -56,19 +72,23 @@ describe('RateService', () => {
         }),
       );
 
-      const currentRate = await rateService.getCurrentRate();
+      jest.spyOn(rateClient, 'getRate');
+
+      const rate = await rateService.getCurrentRate();
 
       const response: IExchangeRate = {
         rate: 39.17,
-        exchangedate: '02.05.2024',
+        exchangeDate: new Date('2024-05-02').toISOString(),
       };
 
       expect(httpService.get).toHaveBeenCalledTimes(1);
 
-      expect(currentRate).toEqual(response);
+      expect(rateClient.getRate).toHaveBeenCalledTimes(1);
+
+      expect(rate).toEqual(response);
     });
 
-    it('should throw ExhangeRateAPIException cause error from thir party service', async () => {
+    it('should throw RateClientException cause all client are not able to provide exchange rate', async () => {
       const errorResponse = {
         response: {
           status: 429,
@@ -90,7 +110,7 @@ describe('RateService', () => {
         exception = ex;
       }
 
-      expect(exception).toBeInstanceOf(ExchangeRateAPIException);
+      expect(exception).toBeInstanceOf(RateClientException);
     });
   });
 });

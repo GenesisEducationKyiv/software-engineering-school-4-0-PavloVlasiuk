@@ -1,30 +1,21 @@
-import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
-import { catchError, firstValueFrom } from 'rxjs';
+import { Inject, Injectable } from '@nestjs/common';
 
-import { ExchangeRateAPIException } from './exceptions';
-import { IExchangeRate, IGetExchangeRate } from './interfaces';
-import { API_URL } from './rate.constants';
+import { RateResponseDto } from './dtos/responses/rate.response.dto';
+import { IExchangeRate } from './interfaces';
+import {
+  IRateClient,
+  RATE_CLIENT_TOKEN,
+} from './interfaces/rate-client.interface';
 
 @Injectable()
 export class RateService {
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    @Inject(RATE_CLIENT_TOKEN) private readonly rateClient: IRateClient,
+  ) {}
 
   async getCurrentRate(): Promise<IExchangeRate> {
-    const {
-      data: [currency],
-    } = await firstValueFrom(
-      this.httpService.get<Array<IGetExchangeRate>>(API_URL).pipe(
-        catchError((e) => {
-          console.error(e);
-          throw new ExchangeRateAPIException();
-        }),
-      ),
-    );
+    const rate = await this.rateClient.getRate();
 
-    return {
-      rate: currency.rate,
-      exchangedate: currency.exchangedate,
-    };
+    return new RateResponseDto(rate);
   }
 }

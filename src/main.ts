@@ -1,5 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { Logger } from 'nestjs-pino';
 
 import { AppModule } from './app.module';
 import { AppConfigService } from './config/app-config.service';
@@ -27,8 +28,12 @@ async function bootstrap() {
     }),
   );
 
+  const logger = app.get<Logger>(Logger);
+
+  app.useLogger(logger);
+
   await app.listen(PORT, HOST, async () => {
-    console.log(`Server is running on http://${HOST}:${PORT}`);
+    logger.log(`Server is running on http://${HOST}:${PORT}`);
   });
 }
 bootstrap();
