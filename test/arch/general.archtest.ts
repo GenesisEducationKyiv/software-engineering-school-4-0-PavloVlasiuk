@@ -7,7 +7,6 @@ describe('architecture', () => {
   const repositories = '/.*.repository.ts$/';
 
   it('business logic layer should no depend on presentation layer', async () => {
-    console.log(filesOfProject().matchingPattern(services));
     const rule = filesOfProject()
       .matchingPattern(services)
       .shouldNot()
@@ -41,6 +40,26 @@ describe('architecture', () => {
       .matchingPattern(repositories)
       .should()
       .beFreeOfCycles();
+
+    await expect(rule).toPassAsync();
+  });
+
+  it('controllers should not depend on services directly', async () => {
+    const rule = filesOfProject()
+      .matchingPattern(controllers)
+      .shouldNot()
+      .dependOnFiles()
+      .matchingPattern(services);
+
+    await expect(rule).toPassAsync();
+  });
+
+  it('services should not depend on repositories directly', async () => {
+    const rule = filesOfProject()
+      .matchingPattern(controllers)
+      .shouldNot()
+      .dependOnFiles()
+      .matchingPattern(services);
 
     await expect(rule).toPassAsync();
   });
