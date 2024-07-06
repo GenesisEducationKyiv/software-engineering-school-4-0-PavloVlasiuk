@@ -1,4 +1,14 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["node_modules", "test", "dist", "**/*spec.ts", "rate-service", "api-gateway", "subscription-service", "notification-service"]
+  "exclude": [
+    "node_modules",
+    "test",
+    "dist",
+    "**/*spec.ts",
+    "rate-service",
+    "api-gateway",
+    "subscription-service",
+    "notification-service",
+    "proto"
+  ]
 }

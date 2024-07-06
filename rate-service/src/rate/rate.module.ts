@@ -10,8 +10,8 @@ import {
 } from './clients';
 import { RATE_CLIENT, RATE_SERVICE } from './interfaces';
 import { RateService } from './rate.service';
-import { AppConfigModule } from '../config/app-config.module';
-import { AppConfigService } from '../config/app-config.service';
+import { AppConfigModule } from '../config/app-config';
+import { AppConfigService } from '../config/app-config/app-config.service';
 import { RateController } from './rate.controller';
 
 const RateServiceImpl: Provider = {
