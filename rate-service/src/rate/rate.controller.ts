@@ -1,18 +1,20 @@
-import { Controller, Inject } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 
-import { RateResponseDto } from './dto/responses/rate.response.dto';
 import { IRateService, RATE_SERVICE } from './interfaces';
-import { GrpcMethod } from '@nestjs/microservices';
+import {
+  Rate,
+  RateServiceController,
+  RateServiceControllerMethods,
+} from '../../../proto/dist/types/rate';
 
-@Controller('rate')
-export class RateController {
+@RateServiceControllerMethods()
+export class RateController implements RateServiceController {
   constructor(
     @Inject(RATE_SERVICE)
     private readonly rateService: IRateService,
   ) {}
 
-  @GrpcMethod('RateService')
-  async getCurrentRate(): Promise<RateResponseDto> {
+  async getCurrentRate(): Promise<Rate> {
     return await this.rateService.getCurrentRate();
   }
 }

@@ -5,10 +5,10 @@ import { PinoLogger } from 'nestjs-pino';
 import { catchError, firstValueFrom } from 'rxjs';
 
 import { AbstractRateClient } from './abstract-rate.client';
-import { AppConfigService } from '../../config/app-config.service';
+import { AppConfigService } from '../../config/app-config';
 import { RateClientException } from '../exceptions';
 import { IExchangeRate } from '../interfaces';
-import { DOLLAR_CODE, SECOND } from '../rate.constants';
+import { MONOBANK_DOLLAR_CODE, SECOND } from '../rate.constants';
 
 export interface IGetMonobankRate {
   currencyCodeA: number;
@@ -26,7 +26,7 @@ export class MonobankClient extends AbstractRateClient {
     readonly appConfigService: AppConfigService,
     readonly logger: PinoLogger,
   ) {
-    super(httpService, appConfigService, logger);
+    super();
   }
 
   async getRate(): Promise<IExchangeRate> {
@@ -48,7 +48,9 @@ export class MonobankClient extends AbstractRateClient {
         `api.monobank.ua - Response: ${JSON.stringify({ data })}`,
       );
 
-      const currency = data.find((c) => c.currencyCodeA === DOLLAR_CODE);
+      const currency = data.find(
+        (c) => c.currencyCodeA === MONOBANK_DOLLAR_CODE,
+      );
 
       if (!currency) throw new RateClientException();
 

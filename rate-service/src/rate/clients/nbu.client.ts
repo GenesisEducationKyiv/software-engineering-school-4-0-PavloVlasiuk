@@ -5,7 +5,7 @@ import { PinoLogger } from 'nestjs-pino';
 import { catchError, firstValueFrom } from 'rxjs';
 
 import { AbstractRateClient } from './abstract-rate.client';
-import { AppConfigService } from '../../config/app-config.service';
+import { AppConfigService } from '../../config/app-config';
 import { RateClientException } from '../exceptions';
 import { IExchangeRate } from '../interfaces';
 
@@ -24,7 +24,7 @@ export class NBUClient extends AbstractRateClient {
     readonly appConfigService: AppConfigService,
     readonly logger: PinoLogger,
   ) {
-    super(httpService, appConfigService, logger);
+    super();
   }
 
   async getRate(): Promise<IExchangeRate> {
