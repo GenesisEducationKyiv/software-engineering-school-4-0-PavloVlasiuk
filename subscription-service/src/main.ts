@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 import { ValidationPipe } from '@nestjs/common';
+import { SUBSCRIPTION_PACKAGE_NAME } from '../../proto/dist/types/subscription';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
@@ -10,12 +11,12 @@ async function bootstrap() {
     {
       transport: Transport.GRPC,
       options: {
-        package: 'subscription',
+        package: SUBSCRIPTION_PACKAGE_NAME,
         protoPath: join(
           __dirname,
-          '../../proto/subscription/subscription.proto',
+          '../../../../proto/subscription/subscription.proto',
         ),
-        url: '0.0.0.0:5002',
+        url: `${process.env.HOST}:${process.env.PORT}`,
       },
     },
   );

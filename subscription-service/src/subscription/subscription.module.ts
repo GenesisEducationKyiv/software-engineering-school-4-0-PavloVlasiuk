@@ -17,7 +17,8 @@ const SubscriptionServiceImpl: Provider = {
 
 @Module({
   imports: [DatabaseModule],
-  providers: [SubscriptionRepositoryImpl, SubscriptionServiceImpl],
   controllers: [SubscriptionController],
+  providers: [SubscriptionRepositoryImpl, SubscriptionServiceImpl],
+  exports: [SubscriptionServiceImpl],
 })
 export class SubscriptionModule {}
