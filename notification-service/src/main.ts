@@ -1,4 +1,5 @@
 import { join } from 'path';
+import { NOTIFICATION_PACKAGE_NAME } from '../../proto/dist/types/notification';
 
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
