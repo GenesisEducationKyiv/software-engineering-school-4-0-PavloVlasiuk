@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { RateModule } from './modules/rate/rate.module';
-import { SubscriptionModule } from './modules/subscription/subscription.module';
+import { RateModule } from './rate/rate.module';
+import { SubscriptionModule } from './subscription/subscription.module';
+import { AppConfigModule } from './config/app-config';
 
 @Module({
-  imports: [RateModule, SubscriptionModule],
+  imports: [AppConfigModule, RateModule, SubscriptionModule],
 })
 export class AppModule {}
