@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { join } from 'path';
+import { NOTIFICATION_PACKAGE_NAME } from '../../proto/dist/types/notification';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
@@ -9,12 +10,12 @@ async function bootstrap() {
     {
       transport: Transport.GRPC,
       options: {
-        package: 'notification',
+        package: NOTIFICATION_PACKAGE_NAME,
         protoPath: join(
           __dirname,
-          '../../proto/notification/notification.proto',
+          '../../../../proto/notification/notification.proto',
         ),
-        url: '0.0.0.0:5003',
+        url: `${process.env.HOST}:${process.env.PORT}`,
       },
     },
   );

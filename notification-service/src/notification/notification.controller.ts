@@ -1,22 +1,27 @@
-import { Controller, Inject } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { INotificationService, NOTIFICATION_SERVICE } from './interfaces';
-import { GrpcMethod, Payload } from '@nestjs/microservices';
+import { Payload } from '@nestjs/microservices';
+import {
+  NotificationServiceControllerMethods,
+  NotificationServiceController,
+  Empty,
+} from '../../../proto/dist/types/notification';
+import { Observable } from 'rxjs';
 import { SendRateEmailRequestDto } from './dto/requests/send-rate-email.request.dto';
 
-@Controller()
-export class NotificationController {
+@NotificationServiceControllerMethods()
+export class NotificationController implements NotificationServiceController {
   constructor(
     @Inject(NOTIFICATION_SERVICE)
     private readonly notificationService: INotificationService,
   ) {}
 
-  @GrpcMethod(NOTIFICATION_SERVICE)
-  async sendRateEmail(
-    @Payload() payload: SendRateEmailRequestDto,
-  ): Promise<void> {
-    await this.notificationService.sendRateEmail(
-      payload.rate,
-      payload.recipients,
+  sendRateEmail(
+    @Payload() request: SendRateEmailRequestDto,
+  ): Empty | Promise<Empty> | Observable<Empty> {
+    return this.notificationService.sendRateEmail(
+      request.rate,
+      request.recipients,
     );
   }
 }
