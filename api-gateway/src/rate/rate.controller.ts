@@ -1,27 +1,29 @@
 import { Controller, Get, Inject, OnModuleInit } from '@nestjs/common';
-import { RATE_PACKAGE } from './types/rate';
 import { ClientGrpc } from '@nestjs/microservices';
+import {
+  RATE_PACKAGE_NAME,
+  RATE_SERVICE_NAME,
+  Rate,
+  RateServiceClient,
+} from '../../../proto/dist/types/rate';
 import { Observable } from 'rxjs';
-
-interface RateService {
-  getCurrentRate({}): Observable<any>;
-}
 
 @Controller('rate')
 export class RateController implements OnModuleInit {
-  private rateService: RateService;
+  private rateService: RateServiceClient;
 
   constructor(
-    @Inject(RATE_PACKAGE)
+    @Inject(RATE_PACKAGE_NAME)
     private readonly client: ClientGrpc,
   ) {}
 
   onModuleInit() {
-    this.rateService = this.client.getService<RateService>('RateService');
+    this.rateService =
+      this.client.getService<RateServiceClient>(RATE_SERVICE_NAME);
   }
 
   @Get()
-  async getCurrentRate(): Promise<any> {
+  getCurrentRate(): Observable<Rate> {
     return this.rateService.getCurrentRate(null);
   }
 }
