@@ -1,11 +1,12 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
+  "sourceRoot": "notification-service/src",
   "compilerOptions": {
     "deleteOutDir": true,
     "assets": [
-      "mail/templates/*"
+      "mail/templates/*",
+      "**/*.proto"
     ],
     "watchAssets": true
   }
