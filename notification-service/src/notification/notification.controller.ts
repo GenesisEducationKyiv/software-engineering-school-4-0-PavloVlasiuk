@@ -4,8 +4,8 @@ import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { SendRateEmailRequestDto } from './dto/requests';
 import { INotificationService, NOTIFICATION_SERVICE } from './interfaces';
 
-@Controller()
-export class NotificationController {
+@NotificationServiceControllerMethods()
+export class NotificationController implements NotificationServiceController {
   constructor(
     @Inject(NOTIFICATION_SERVICE)
     private readonly notificationService: INotificationService,
