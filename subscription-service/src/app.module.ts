@@ -6,6 +6,9 @@ import { EventModule } from './event/event.module';
 import { NotificationScheduleModule } from './notification-schedule/notification-schedule.module';
 import { RateModule } from './rate/rate.module';
 import { SubscriptionModule } from './subscription/subscription.module';
+import { RateModule } from './rate/rate.module';
+import { TaskScheduleModule } from './task-schedule/task-schedule.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
