@@ -1,0 +1,16 @@
+{
+  "name": "proto",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "proto:build": "chmod +x ./compile.sh && ./compile.sh"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@nestjs/microservices": "^10.3.10",
+    "ts-proto": "^1.181.0"
+  }
+}
