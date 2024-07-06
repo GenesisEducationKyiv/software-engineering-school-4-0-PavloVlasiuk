@@ -1,8 +1,17 @@
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from './database/database.module';
 import { SubscriptionModule } from './subscription/subscription.module';
+import { RateModule } from './rate/rate.module';
+import { TaskScheduleModule } from './task-schedule/task-schedule.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
-  imports: [DatabaseModule, SubscriptionModule],
+  imports: [
+    DatabaseModule,
+    SubscriptionModule,
+    RateModule,
+    ScheduleModule.forRoot(),
+    TaskScheduleModule,
+  ],
 })
 export class AppModule {}
