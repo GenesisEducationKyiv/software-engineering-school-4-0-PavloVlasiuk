@@ -17,6 +17,7 @@ import {
   Subscribers,
   SubscriptionServiceClient,
 } from '../../../proto/dist/types/subscription';
+import { SubscribeEmailRequestDto } from './dto/requests';
 
 @Controller('subscription')
 export class SubscriptionController implements OnModuleInit {
