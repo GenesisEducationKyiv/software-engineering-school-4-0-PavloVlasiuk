@@ -1,10 +1,11 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { status as Status } from '@grpc/grpc-js';
+import { RpcException } from '@nestjs/microservices';
 
-export class RateClientException extends HttpException {
+export class RateClientException extends RpcException {
   constructor() {
-    super(
-      'Error fetching exchange rate data from third party service',
-      HttpStatus.INTERNAL_SERVER_ERROR,
-    );
+    const message =
+      'Error fetching exchange rate data from third party service';
+
+    super({ details: message, code: Status.INTERNAL });
   }
 }

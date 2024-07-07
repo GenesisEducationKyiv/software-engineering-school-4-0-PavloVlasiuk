@@ -1,11 +1,13 @@
-import { HttpStatus } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
+import { status as Status } from '@grpc/grpc-js';
 
 export class AlreadySubscribedException extends RpcException {
   constructor() {
+    const message = 'Email is already subscribed';
+
     super({
-      message: 'Email is already subscribed',
-      status: HttpStatus.CONFLICT,
+      details: message,
+      code: Status.ALREADY_EXISTS,
     });
   }
 }
