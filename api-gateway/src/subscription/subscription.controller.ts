@@ -6,16 +6,16 @@ import {
   OnModuleInit,
   Post,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { ClientGrpc } from '@nestjs/microservices';
+import { Observable, catchError, throwError } from 'rxjs';
+import { ClientGrpc, RpcException } from '@nestjs/microservices';
 import {
+  Empty,
   SUBSCRIPTION_PACKAGE_NAME,
   SUBSCRIPTION_SERVICE_NAME,
   SubscribeEmailDto,
   Subscribers,
   SubscriptionServiceClient,
 } from '../../../proto/dist/types/subscription';
-import { Empty } from '../../../proto/dist/types/rate';
 
 @Controller('subscription')
 export class SubscriptionController implements OnModuleInit {
@@ -34,11 +34,15 @@ export class SubscriptionController implements OnModuleInit {
 
   @Post()
   subscribe(@Body() subscribeEmailDto: SubscribeEmailDto): Observable<Empty> {
-    return this.subscriptionService.subscribe(subscribeEmailDto);
+    return this.subscriptionService
+      .subscribe(subscribeEmailDto)
+      .pipe(catchError((error) => throwError(() => new RpcException(error))));
   }
 
   @Get()
   getAllSubscribers(): Observable<Subscribers> {
-    return this.subscriptionService.getAllSubscribers(null);
+    return this.subscriptionService
+      .getAllSubscribers(null)
+      .pipe(catchError((error) => throwError(() => new RpcException(error))));
   }
 }
