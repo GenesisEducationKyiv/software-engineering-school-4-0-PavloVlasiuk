@@ -1,12 +1,12 @@
 import { Controller, Get, Inject, OnModuleInit } from '@nestjs/common';
-import { ClientGrpc } from '@nestjs/microservices';
+import { ClientGrpc, RpcException } from '@nestjs/microservices';
 import {
   RATE_PACKAGE_NAME,
   RATE_SERVICE_NAME,
   Rate,
   RateServiceClient,
 } from '../../../proto/dist/types/rate';
-import { Observable } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 
 @Controller('rate')
 export class RateController implements OnModuleInit {
@@ -24,6 +24,8 @@ export class RateController implements OnModuleInit {
 
   @Get()
   getCurrentRate(): Observable<Rate> {
-    return this.rateService.getCurrentRate(null);
+    return this.rateService
+      .getCurrentRate(null)
+      .pipe(catchError((error) => throwError(() => new RpcException(error))));
   }
 }
