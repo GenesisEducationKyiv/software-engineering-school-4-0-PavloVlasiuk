@@ -12,10 +12,10 @@ import {
   Empty,
   SUBSCRIPTION_PACKAGE_NAME,
   SUBSCRIPTION_SERVICE_NAME,
-  SubscribeEmailDto,
   Subscribers,
   SubscriptionServiceClient,
 } from '../../../proto/dist/types/subscription';
+import { SubscribeEmailRequestDto } from './dto/requests';
 
 @Controller('subscription')
 export class SubscriptionController implements OnModuleInit {
@@ -33,7 +33,9 @@ export class SubscriptionController implements OnModuleInit {
   }
 
   @Post()
-  subscribe(@Body() subscribeEmailDto: SubscribeEmailDto): Observable<Empty> {
+  subscribe(
+    @Body() subscribeEmailDto: SubscribeEmailRequestDto,
+  ): Observable<Empty> {
     return this.subscriptionService
       .subscribe(subscribeEmailDto)
       .pipe(catchError((error) => throwError(() => new RpcException(error))));
