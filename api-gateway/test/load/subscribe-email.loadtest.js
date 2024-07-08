@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import { check, sleep } from 'k6';
 import http from 'k6/http';
 
@@ -13,7 +12,7 @@ export const options = {
   ],
 };
 
-const url = 'http://localhost:3000/api/email/subscribe';
+const url = 'http://localhost:3000/api/subscription';
 
 const getRandomNumber = (min, max) => {
   return Math.random() * (max - min) + min;
