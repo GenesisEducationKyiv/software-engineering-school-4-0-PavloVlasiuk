@@ -1,6 +1,8 @@
+import { join } from 'path';
+
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { join } from 'path';
+
 import { RateService } from './rate.service';
 import {
   RATE_PACKAGE_NAME,

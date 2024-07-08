@@ -1,4 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
+import { SubscribeEmailRequestDto } from './dto/requests';
+import { Subscription } from './entities';
+import { AlreadySubscribedException } from './exceptions';
 import {
   ISubscriptionRepository,
   ISubscriptionService,
@@ -6,9 +10,6 @@ import {
   SUBSCRIPTION_SERVICE,
 } from './interfaces';
 import { SubscriptionService } from './subscription.service';
-import { SubscribeEmailRequestDto } from './dto/requests';
-import { AlreadySubscribedException } from './exceptions';
-import { Subscription } from './entities';
 
 describe('SubscriptionService', () => {
   let subscriptionService: ISubscriptionService;

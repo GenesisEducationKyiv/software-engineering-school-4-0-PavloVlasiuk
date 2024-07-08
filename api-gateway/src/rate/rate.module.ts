@@ -1,9 +1,11 @@
+import { join } from 'path';
+
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { RATE_PACKAGE_NAME } from '../../../proto/dist/types/rate';
-import { join } from 'path';
+
 import { RateController } from './rate.controller';
-import { AppConfigModule, AppConfigService } from 'src/config/app-config';
+import { RATE_PACKAGE_NAME } from '../../../proto/dist/types/rate';
+import { AppConfigModule, AppConfigService } from '../config/app-config';
 
 @Module({
   imports: [

@@ -1,14 +1,15 @@
 import { Test } from '@nestjs/testing';
+
 import { SubscribeEmailRequestDto } from './dto/requests';
+import { AlreadySubscribedException } from './exceptions';
 import {
   ISubscriptionService,
   SUBSCRIPTION_REPOSITORY,
   SUBSCRIPTION_SERVICE,
 } from './interfaces';
-import { DatabaseModule, PrismaService } from '../database';
-import { SubscriptionService } from './subscription.service';
 import { SubscriptionRepository } from './repositories';
-import { AlreadySubscribedException } from './exceptions';
+import { SubscriptionService } from './subscription.service';
+import { DatabaseModule, PrismaService } from '../database';
 
 describe('EmailService', () => {
   const subscribers: SubscribeEmailRequestDto[] = [

@@ -6,8 +6,10 @@ import {
   OnModuleInit,
   Post,
 } from '@nestjs/common';
-import { Observable, catchError, throwError } from 'rxjs';
 import { ClientGrpc, RpcException } from '@nestjs/microservices';
+import { Observable, catchError, throwError } from 'rxjs';
+
+import { SubscribeEmailRequestDto } from './dto/requests';
 import {
   Empty,
   SUBSCRIPTION_PACKAGE_NAME,
@@ -15,7 +17,6 @@ import {
   Subscribers,
   SubscriptionServiceClient,
 } from '../../../proto/dist/types/subscription';
-import { SubscribeEmailRequestDto } from './dto/requests';
 
 @Controller('subscription')
 export class SubscriptionController implements OnModuleInit {

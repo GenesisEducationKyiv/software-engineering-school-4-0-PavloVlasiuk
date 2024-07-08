@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+
 import { IExchangeRate, INotificationService, IRecipient } from './interfaces';
 import {
   IMailingService,

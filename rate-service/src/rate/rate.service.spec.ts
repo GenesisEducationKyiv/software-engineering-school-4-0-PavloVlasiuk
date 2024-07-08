@@ -13,7 +13,7 @@ import {
   RATE_SERVICE,
 } from './interfaces';
 import { RateService } from './rate.service';
-import { AppConfigModule } from '../config/app-config.module';
+import { AppConfigModule } from '../config/app-config';
 
 describe('RateService', () => {
   let rateService: IRateService;

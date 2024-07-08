@@ -1,13 +1,14 @@
 import { Inject } from '@nestjs/common';
-import { INotificationService, NOTIFICATION_SERVICE } from './interfaces';
 import { Payload } from '@nestjs/microservices';
+import { Observable } from 'rxjs';
+
+import { SendRateEmailRequestDto } from './dto/requests/send-rate-email.request.dto';
+import { INotificationService, NOTIFICATION_SERVICE } from './interfaces';
 import {
   NotificationServiceControllerMethods,
   NotificationServiceController,
   Empty,
 } from '../../../proto/dist/types/notification';
-import { Observable } from 'rxjs';
-import { SendRateEmailRequestDto } from './dto/requests/send-rate-email.request.dto';
 
 @NotificationServiceControllerMethods()
 export class NotificationController implements NotificationServiceController {
