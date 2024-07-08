@@ -1,4 +1,4 @@
-import { Subscription } from 'src/subscription/entities';
+import { Subscription } from '../../../subscription/entities';
 
 class SubscriberResponse {
   id: string;

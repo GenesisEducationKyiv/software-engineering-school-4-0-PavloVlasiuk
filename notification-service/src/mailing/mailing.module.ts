@@ -6,8 +6,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 
 import { MAILING_SERVICE } from './interfaces';
 import { NodeMailerService } from './services';
-import { AppConfigModule } from '../config/app-config';
-import { AppConfigService } from '../config/app-config';
+import { AppConfigModule, AppConfigService } from '../config/app-config';
 
 const MailingServiceImpl: Provider = {
   provide: MAILING_SERVICE,

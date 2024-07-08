@@ -1,8 +1,10 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { join } from 'path';
+
 import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+
+import { AppModule } from './app.module';
 import { SUBSCRIPTION_PACKAGE_NAME } from '../../proto/dist/types/subscription';
 
 async function bootstrap() {

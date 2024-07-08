@@ -9,10 +9,10 @@ import {
   PrivatbankClient,
 } from './clients';
 import { RATE_CLIENT, RATE_SERVICE } from './interfaces';
+import { RateController } from './rate.controller';
 import { RateService } from './rate.service';
 import { AppConfigModule } from '../config/app-config';
 import { AppConfigService } from '../config/app-config/app-config.service';
-import { RateController } from './rate.controller';
 
 const RateServiceImpl: Provider = {
   provide: RATE_SERVICE,

@@ -1,5 +1,5 @@
-import { HttpStatus } from '@nestjs/common';
 import { status as Status } from '@grpc/grpc-js';
+import { HttpStatus } from '@nestjs/common';
 
 const HttpFromGrcp: Record<number, number> = {
   [Status.UNKNOWN]: HttpStatus.BAD_GATEWAY,

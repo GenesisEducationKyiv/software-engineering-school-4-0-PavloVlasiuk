@@ -1,8 +1,9 @@
 import { Module, Provider } from '@nestjs/common';
-import { MailingModule } from 'src/mailing/mailing.module';
+
+import { NOTIFICATION_SERVICE } from './interfaces';
 import { NotificationController } from './notification.controller';
 import { NotificationService } from './notification.service';
-import { NOTIFICATION_SERVICE } from './interfaces';
+import { MailingModule } from '../mailing/mailing.module';
 
 const NotificationServiceImpl: Provider = {
   provide: NOTIFICATION_SERVICE,

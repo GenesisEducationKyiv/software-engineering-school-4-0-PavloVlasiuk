@@ -1,12 +1,13 @@
+import { join } from 'path';
+
 import { Module, Provider } from '@nestjs/common';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 import { TASK_SCHEDULE_SERVICE } from './interfaces';
 import { TaskScheduleService } from './task-schedule.service';
+import { NOTIFICATION_PACKAGE_NAME } from '../../../proto/dist/types/notification';
 import { RateModule } from '../rate/rate.module';
 import { SubscriptionModule } from '../subscription/subscription.module';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { join } from 'path';
-import { NOTIFICATION_PACKAGE_NAME } from '../../../proto/dist/types/notification';
 
 const TaskScheduleServiceImpl: Provider = {
   provide: TASK_SCHEDULE_SERVICE,
