@@ -6,12 +6,28 @@ jobs:
   lint:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        services:
+          [
+            "api-gateway",
+            "rate-service",
+            "subscription-service",
+            "notification-service",
+          ]
+
+    defaults:
+      run:
+        working-directory: ./${{matrix.services}}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Install Node.js and dependencies
         uses: ./.github/actions/install
+        with:
+          project-dir: ${{matrix.services}}
 
       - name: Lint
         run: npm run lint
@@ -19,12 +35,28 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        services:
+          [
+            "api-gateway",
+            "rate-service",
+            "subscription-service",
+            "notification-service",
+          ]
+
+    defaults:
+      run:
+        working-directory: ./${{matrix.services}}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Install Node.js and dependencies
         uses: ./.github/actions/install
+        with:
+          project-dir: ${{matrix.services}}
 
       - name: Build
         run: npm run build --if-present
@@ -35,12 +67,22 @@ jobs:
   integration-test:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        services: ["subscription-service"]
+
+    defaults:
+      run:
+        working-directory: ./${{matrix.services}}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Install Node.js and dependencies
         uses: ./.github/actions/install
+        with:
+          project-dir: ${{matrix.services}}
 
       - name: Start PostgreSQL database
         run: npm run db:test:up
