@@ -62,6 +62,8 @@ describe('EmailService', () => {
       });
 
       expect(subscriber.email).toBe(subscribeEmailDto.email);
+
+      await prisma.subscription.delete({ where: { email: subscriber.email } });
     });
 
     it('should find subscriber in the database and throw AlreadySubscribedException', async () => {
@@ -85,7 +87,9 @@ describe('EmailService', () => {
     it('should get all subscribers from database', async () => {
       const foundSubscribers = await subscriptionService.getAllSubscribers();
 
-      expect(foundSubscribers).toEqual(subscribers);
+      expect(foundSubscribers.map(({ email }) => ({ email }))).toEqual(
+        subscribers,
+      );
     });
   });
 });
