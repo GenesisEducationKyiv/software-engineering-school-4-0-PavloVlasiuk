@@ -21,3 +21,8 @@ runs:
       run: npm ci
       shell: bash
       working-directory: ${{inputs.project-dir}}
+    
+    - name: Install proto dependencies
+      run: npm ci
+      shell: bash
+      working-directory: ./proto
