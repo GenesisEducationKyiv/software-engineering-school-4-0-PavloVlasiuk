@@ -5,32 +5,30 @@ services:
     image: postgres:latest
     container_name: postgres-db
     restart: always
-    env_file:
-      - .env.production
     networks:
       - net
     ports:
       - 5432:5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
-  
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: exchange-rate-api
+    
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
     restart: always
     env_file:
-      - .env.production
-    depends_on:
-      - postgres
+      - ./notification-service/.env
+    ports:
+      - 5672:5672
+      - 15672:15672
     networks:
       - net
-    ports:
-      - 3000:3000
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 
 volumes:
   postgres_data:
+  rabbitmq_data:
 
 networks:
   net:
