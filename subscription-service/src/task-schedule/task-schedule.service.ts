@@ -1,14 +1,9 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { ClientGrpc } from '@nestjs/microservices';
+import { Inject, Injectable } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { firstValueFrom } from 'rxjs';
 
 import { TIMEZONE } from './task-schedule.constants';
-import {
-  NOTIFICATION_PACKAGE_NAME,
-  NOTIFICATION_SERVICE_NAME,
-  NotificationServiceClient,
-} from '../../../proto/dist/types/notification';
 import { RateService } from '../rate/rate.service';
 import {
   ISubscriptionService,
@@ -16,25 +11,18 @@ import {
 } from '../subscription/interfaces';
 
 @Injectable()
-export class TaskScheduleService implements OnModuleInit {
-  private notificationService: NotificationServiceClient;
-
+export class TaskScheduleService {
   constructor(
     private readonly rateService: RateService,
-    @Inject(NOTIFICATION_PACKAGE_NAME)
-    private readonly client: ClientGrpc,
+    @Inject('RabbitService')
+    private readonly client: ClientProxy,
     @Inject(SUBSCRIPTION_SERVICE)
     private readonly subscriptionService: ISubscriptionService,
-  ) {}
-
-  onModuleInit() {
-    this.notificationService =
-      this.client.getService<NotificationServiceClient>(
-        NOTIFICATION_SERVICE_NAME,
-      );
+  ) {
+    client.connect();
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_10AM, { timeZone: TIMEZONE })
+  @Cron(CronExpression.EVERY_30_SECONDS, { timeZone: TIMEZONE })
   async sendCurrentRateEmail(): Promise<void> {
     const rate = await firstValueFrom(this.rateService.getCurrentRate());
 
@@ -42,8 +30,6 @@ export class TaskScheduleService implements OnModuleInit {
 
     const recipients = subscribers.map(({ email }) => ({ email }));
 
-    await firstValueFrom(
-      this.notificationService.sendRateEmail({ rate, recipients }),
-    );
+    this.client.emit('rate-email', { rate, recipients });
   }
 }

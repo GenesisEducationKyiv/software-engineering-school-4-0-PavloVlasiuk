@@ -1,11 +1,8 @@
-import { join } from 'path';
-
 import { Module, Provider } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
 import { TASK_SCHEDULE_SERVICE } from './interfaces';
 import { TaskScheduleService } from './task-schedule.service';
-import { NOTIFICATION_PACKAGE_NAME } from '../../../proto/dist/types/notification';
 import { RateModule } from '../rate/rate.module';
 import { SubscriptionModule } from '../subscription/subscription.module';
 
@@ -20,15 +17,11 @@ const TaskScheduleServiceImpl: Provider = {
     SubscriptionModule,
     ClientsModule.register([
       {
-        name: NOTIFICATION_PACKAGE_NAME,
-        transport: Transport.GRPC,
+        name: 'RabbitService',
+        transport: Transport.RMQ,
         options: {
-          url: `${process.env.NOTIFICATION_SERVICE_HOST}:${process.env.NOTIFICATION_SERVICE_PORT}`,
-          package: NOTIFICATION_PACKAGE_NAME,
-          protoPath: join(
-            __dirname,
-            '../../../../../proto/notification/notification.proto',
-          ),
+          urls: [process.env.RABBITMQ_URL],
+          queue: process.env.RABBITMQ_QUEUE,
         },
       },
     ]),
