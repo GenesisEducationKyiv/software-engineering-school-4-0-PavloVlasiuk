@@ -19,6 +19,10 @@ const EventServiceImpl: Provider = {
         options: {
           urls: [process.env.RABBITMQ_URL],
           queue: process.env.RABBITMQ_QUEUE,
+          persistent: true,
+          queueOptions: {
+            durable: true,
+          },
         },
       },
     ]),
