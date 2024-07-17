@@ -22,8 +22,9 @@ export class NodeMailerService implements IMailingService {
         template: resolve('./mail/templates/exchange-rate.template.hbs'),
         context,
       })
-      .catch((e) => {
-        console.error(`Sending email error: ${e}`);
+      .catch((error) => {
+        console.error(`Sending email error: ${error}`);
+        throw error;
       });
   }
 }

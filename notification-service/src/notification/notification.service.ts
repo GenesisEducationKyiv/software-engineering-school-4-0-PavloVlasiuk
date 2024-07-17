@@ -22,9 +22,13 @@ export class NotificationService implements INotificationService {
       date: new Date(exchangeRate.exchangeDate).toDateString(),
     };
 
-    await this.mailingService.sendTemplatedEmail({
-      to: subscriberEmail,
-      context,
-    });
+    try {
+      await this.mailingService.sendTemplatedEmail({
+        to: subscriberEmail,
+        context,
+      });
+    } catch (error) {
+      throw error;
+    }
   }
 }
