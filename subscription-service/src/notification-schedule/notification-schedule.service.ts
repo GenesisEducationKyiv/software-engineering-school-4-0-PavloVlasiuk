@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { firstValueFrom } from 'rxjs';
 
-import { TIMEZONE } from './task-schedule.constants';
+import { TIMEZONE } from './notification-schedule.constants';
+import { EVENT_SERVICE, IEventService } from '../event/interfaces';
 import { RateService } from '../rate/rate.service';
 import {
   ISubscriptionService,
@@ -11,25 +11,25 @@ import {
 } from '../subscription/interfaces';
 
 @Injectable()
-export class TaskScheduleService {
+export class NotificationScheduleService {
   constructor(
     private readonly rateService: RateService,
-    @Inject('RabbitService')
-    private readonly client: ClientProxy,
+    @Inject(EVENT_SERVICE)
+    private readonly eventService: IEventService,
     @Inject(SUBSCRIPTION_SERVICE)
     private readonly subscriptionService: ISubscriptionService,
-  ) {
-    client.connect();
-  }
+  ) {}
 
-  @Cron(CronExpression.EVERY_30_SECONDS, { timeZone: TIMEZONE })
+  @Cron(CronExpression.EVERY_DAY_AT_10AM, { timeZone: TIMEZONE })
   async sendCurrentRateEmail(): Promise<void> {
-    const rate = await firstValueFrom(this.rateService.getCurrentRate());
+    const exchangeRate = await firstValueFrom(
+      this.rateService.getCurrentRate(),
+    );
 
     const subscribers = await this.subscriptionService.getAllSubscribers();
 
-    const recipients = subscribers.map(({ email }) => ({ email }));
-
-    this.client.emit('rate-email', { rate, recipients });
+    for (const subscriber of subscribers) {
+      this.eventService.emitRateEmail({ subscriber, exchangeRate });
+    }
   }
 }
