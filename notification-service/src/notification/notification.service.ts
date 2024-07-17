@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { IExchangeRate, INotificationService, IRecipient } from './interfaces';
+import { INotificationService, ISendRateData } from './interfaces';
 import {
   IMailingService,
   ISendCurrentRateContext,
@@ -13,22 +13,18 @@ export class NotificationService implements INotificationService {
     @Inject(MAILING_SERVICE) private readonly mailingService: IMailingService,
   ) {}
 
-  async sendRateEmail(
-    { rate, exchangeDate }: IExchangeRate,
-    recipients: IRecipient[],
-  ): Promise<void> {
+  async sendRateEmail({
+    subscriberEmail,
+    exchangeRate,
+  }: ISendRateData): Promise<void> {
     const context: ISendCurrentRateContext = {
-      rate,
-      date: new Date(exchangeDate).toDateString(),
+      rate: exchangeRate.rate,
+      date: new Date(exchangeRate.exchangeDate).toDateString(),
     };
 
-    const emailPromises: Array<Promise<void>> = recipients.map(({ email }) =>
-      this.mailingService.sendTemplatedEmail({
-        to: email,
-        context,
-      }),
-    );
-
-    Promise.all(emailPromises);
+    await this.mailingService.sendTemplatedEmail({
+      to: subscriberEmail,
+      context,
+    });
   }
 }
