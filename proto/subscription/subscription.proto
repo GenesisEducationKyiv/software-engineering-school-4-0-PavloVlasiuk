@@ -5,9 +5,12 @@ package subscription;
 service SubscriptionService {
   rpc Subscribe(SubscribeEmailDto) returns (Empty) {}
   rpc GetAllSubscribers(Empty) returns (Subscribers) {}
+  rpc Unsubscribe(UnsubscribeEmailDto) returns (Empty) {}
 }
 
 message SubscribeEmailDto { string email = 1; }
+
+message UnsubscribeEmailDto { string email = 1; }
 
 message Empty {}
 

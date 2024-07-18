@@ -16,6 +16,7 @@ datasource db {
 model Subscription {
   id        String   @id @default(uuid())
   email     String   @unique
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @map("updated_at")
 
