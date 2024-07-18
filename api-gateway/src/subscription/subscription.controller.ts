@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   OnModuleInit,
@@ -9,7 +10,10 @@ import {
 import { ClientGrpc, RpcException } from '@nestjs/microservices';
 import { Observable, catchError, throwError } from 'rxjs';
 
-import { SubscribeEmailRequestDto } from './dto/requests';
+import {
+  SubscribeEmailRequestDto,
+  UnsubscribeEmailRequestDto,
+} from './dto/requests';
 import {
   Empty,
   SUBSCRIPTION_PACKAGE_NAME,
@@ -46,6 +50,15 @@ export class SubscriptionController implements OnModuleInit {
   getAllSubscribers(): Observable<Subscribers> {
     return this.subscriptionService
       .getAllSubscribers(null)
+      .pipe(catchError((error) => throwError(() => new RpcException(error))));
+  }
+
+  @Delete()
+  unsubscribe(
+    @Body() unsubscribeEmailDto: UnsubscribeEmailRequestDto,
+  ): Observable<Empty> {
+    return this.subscriptionService
+      .unsubscribe(unsubscribeEmailDto)
       .pipe(catchError((error) => throwError(() => new RpcException(error))));
   }
 }

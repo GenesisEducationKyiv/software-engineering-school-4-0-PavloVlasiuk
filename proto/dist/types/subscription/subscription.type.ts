@@ -14,6 +14,10 @@ export interface SubscribeEmailDto {
   email: string;
 }
 
+export interface UnsubscribeEmailDto {
+  email: string;
+}
+
 export interface Empty {
 }
 
@@ -32,17 +36,21 @@ export interface SubscriptionServiceClient {
   subscribe(request: SubscribeEmailDto): Observable<Empty>;
 
   getAllSubscribers(request: Empty): Observable<Subscribers>;
+
+  unsubscribe(request: UnsubscribeEmailDto): Observable<Empty>;
 }
 
 export interface SubscriptionServiceController {
   subscribe(request: SubscribeEmailDto): Promise<Empty> | Observable<Empty> | Empty;
 
   getAllSubscribers(request: Empty): Promise<Subscribers> | Observable<Subscribers> | Subscribers;
+
+  unsubscribe(request: UnsubscribeEmailDto): Promise<Empty> | Observable<Empty> | Empty;
 }
 
 export function SubscriptionServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["subscribe", "getAllSubscribers"];
+    const grpcMethods: string[] = ["subscribe", "getAllSubscribers", "unsubscribe"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("SubscriptionService", method)(constructor.prototype[method], method, descriptor);

@@ -1,12 +1,13 @@
 import { Inject } from '@nestjs/common';
 import { Payload } from '@nestjs/microservices';
-import { Observable } from 'rxjs';
 
-import { SubscribeEmailRequestDto } from './dto/requests';
+import {
+  SubscribeEmailRequestDto,
+  UnsubscribeEmailRequestDto,
+} from './dto/requests';
 import { SubscribersResponse } from './dto/responses';
 import { ISubscriptionService, SUBSCRIPTION_SERVICE } from './interfaces';
 import {
-  Empty,
   Subscribers,
   SubscriptionServiceController,
   SubscriptionServiceControllerMethods,
@@ -19,15 +20,21 @@ export class SubscriptionController implements SubscriptionServiceController {
     private readonly subscriptionService: ISubscriptionService,
   ) {}
 
-  subscribe(
+  async subscribe(
     @Payload() subscribeEmailDto: SubscribeEmailRequestDto,
-  ): Empty | Promise<Empty> | Observable<Empty> {
-    return this.subscriptionService.subscribe(subscribeEmailDto);
+  ): Promise<void> {
+    return await this.subscriptionService.subscribe(subscribeEmailDto);
   }
 
   async getAllSubscribers(): Promise<Subscribers> {
     const subscribers = await this.subscriptionService.getAllSubscribers();
 
     return new SubscribersResponse(subscribers);
+  }
+
+  async unsubscribe(
+    @Payload() unsubscribeEmailDto: UnsubscribeEmailRequestDto,
+  ): Promise<void> {
+    return await this.subscriptionService.unsubscribe(unsubscribeEmailDto);
   }
 }
