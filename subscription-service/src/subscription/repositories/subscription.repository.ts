@@ -27,7 +27,9 @@ export class SubscriptionRepository implements ISubscriptionRepository {
   }
 
   async findAll(): Promise<Subscription[]> {
-    const foundEmails = await this.prisma.subscription.findMany();
+    const foundEmails = await this.prisma.subscription.findMany({
+      where: { isActive: true },
+    });
 
     return foundEmails as Subscription[];
   }
