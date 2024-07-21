@@ -11,6 +11,19 @@ services:
       - 5432:5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    env_file:
+      - ./notification-service/.env
+    restart: always
+    networks: 
+      - net
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo_data:/var/lib/mongodb/data
     
   rabbitmq:
     image: rabbitmq:3-management
@@ -29,6 +42,7 @@ services:
 volumes:
   postgres_data:
   rabbitmq_data:
+  mongo_data:
 
 networks:
   net:
