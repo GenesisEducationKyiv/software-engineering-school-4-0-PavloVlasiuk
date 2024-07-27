@@ -27,7 +27,6 @@ export class SubscriptionService implements ISubscriptionService {
     }
 
     const newSubscription = new this.subscriptionModel(subscribeEmailDto);
-    console.log(newSubscription);
 
     await newSubscription.save();
   }
@@ -50,7 +49,7 @@ export class SubscriptionService implements ISubscriptionService {
   }
 
   private async isSubscribed(email: string): Promise<boolean> {
-    const subscription = this.subscriptionModel.findOne({ email });
+    const subscription = await this.subscriptionModel.findOne({ email }).exec();
 
     return !!subscription;
   }
