@@ -14,20 +14,24 @@ import {
   SUBSCRIPTION_REPOSITORY,
   ISubscriptionService,
 } from './interfaces';
+import { CreateSubscriptionSaga } from './sagas/create-subscription';
 
 @Injectable()
 export class SubscriptionService implements ISubscriptionService {
   constructor(
     @Inject(SUBSCRIPTION_REPOSITORY)
     private readonly subscriptionRepository: ISubscriptionRepository,
+    private readonly saga: CreateSubscriptionSaga,
   ) {}
 
-  async subscribe({ email }: SubscribeEmailRequestDto): Promise<void> {
-    const alreadySubscribed = await this.isSubscribed(email);
+  async subscribe(data: SubscribeEmailRequestDto): Promise<void> {
+    const { email } = data;
+    const alreadySubscribed =
+      await this.subscriptionRepository.findByEmail(email);
 
     if (alreadySubscribed) throw new AlreadySubscribedException();
 
-    await this.subscriptionRepository.createOrUpdate(email);
+    return this.saga.start(data);
   }
 
   async getAllSubscribers(): Promise<Subscription[]> {
