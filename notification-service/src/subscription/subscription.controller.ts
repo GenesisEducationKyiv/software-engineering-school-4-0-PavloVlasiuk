@@ -36,8 +36,6 @@ export class SubscriptionController {
 
       return new SuccessfulResponse('Subscription created', HttpStatus.CREATED);
     } catch (error) {
-      console.log(error);
-
       channel.ack(originalMessage);
 
       throw error;
@@ -65,8 +63,6 @@ export class SubscriptionController {
         HttpStatus.NO_CONTENT,
       );
     } catch (error) {
-      console.log(error);
-
       channel.ack(originalMessage);
 
       throw error;

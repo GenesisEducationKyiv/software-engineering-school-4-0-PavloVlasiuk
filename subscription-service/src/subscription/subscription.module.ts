@@ -8,6 +8,11 @@ import {
   CreateLocalSubscriptionStep,
   CreateNotificationDBSubscriptionStep,
 } from './sagas/create-subscription/steps';
+import { DeleteSubscriptionSaga } from './sagas/delete-subscription';
+import {
+  DeleteLocalSubscriptionStep,
+  DeleteNotificationDBSubscriptionStep,
+} from './sagas/delete-subscription/steps';
 import { SubscriptionController } from './subscription.controller';
 import { SubscriptionService } from './subscription.service';
 import { DatabaseModule } from '../database/database.module';
@@ -47,6 +52,9 @@ const SubscriptionServiceImpl: Provider = {
     CreateLocalSubscriptionStep,
     CreateNotificationDBSubscriptionStep,
     CreateSubscriptionSaga,
+    DeleteLocalSubscriptionStep,
+    DeleteNotificationDBSubscriptionStep,
+    DeleteSubscriptionSaga,
   ],
   exports: [SubscriptionServiceImpl],
 })
