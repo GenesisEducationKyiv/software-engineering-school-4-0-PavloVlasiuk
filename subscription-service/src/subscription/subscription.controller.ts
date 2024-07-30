@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
 import { Payload } from '@nestjs/microservices';
 
 import {
@@ -15,6 +15,7 @@ import {
   SubscriptionServiceControllerMethods,
 } from '../../../proto/dist/types/subscription';
 
+@Controller()
 @SubscriptionServiceControllerMethods()
 export class SubscriptionController implements SubscriptionServiceController {
   constructor(
