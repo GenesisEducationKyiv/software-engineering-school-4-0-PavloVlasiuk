@@ -5,10 +5,10 @@ import {
   CreateNotificationDBSubscriptionStep,
 } from './steps';
 import { Subscription } from '../../../subscription/entities';
-import { IStep } from '../interfaces';
+import { ISaga, IStep } from '../interfaces';
 
 @Injectable()
-export class CreateSubscriptionSaga {
+export class CreateSubscriptionSaga implements ISaga<Partial<Subscription>> {
   private steps: IStep<Partial<Subscription>>[] = [];
 
   constructor(
@@ -21,7 +21,7 @@ export class CreateSubscriptionSaga {
   async start(subscription: Partial<Subscription>): Promise<void> {
     const successfulSteps: IStep<Partial<Subscription>>[] = [];
 
-    console.log('Starting saga...');
+    console.log('Starting create subscription saga...');
 
     for (const step of this.steps) {
       try {

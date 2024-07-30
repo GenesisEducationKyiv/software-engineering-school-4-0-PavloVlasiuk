@@ -5,10 +5,10 @@ import {
   DeleteNotificationDBSubscriptionStep,
 } from './steps';
 import { Subscription } from '../../../subscription/entities';
-import { IStep } from '../interfaces';
+import { ISaga, IStep } from '../interfaces';
 
 @Injectable()
-export class DeleteSubscriptionSaga {
+export class DeleteSubscriptionSaga implements ISaga<Partial<Subscription>> {
   private steps: IStep<Partial<Subscription>>[] = [];
 
   constructor(
