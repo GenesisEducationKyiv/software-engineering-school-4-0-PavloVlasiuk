@@ -7,6 +7,8 @@ import {
 } from './dto/requests';
 import { SubscribersResponse } from './dto/responses';
 import { ISubscriptionService, SUBSCRIPTION_SERVICE } from './interfaces';
+import { CreateSubscriptionSaga } from './sagas/create-subscription';
+import { DeleteSubscriptionSaga } from './sagas/delete-subscription';
 import {
   Subscribers,
   SubscriptionServiceController,
@@ -18,12 +20,14 @@ export class SubscriptionController implements SubscriptionServiceController {
   constructor(
     @Inject(SUBSCRIPTION_SERVICE)
     private readonly subscriptionService: ISubscriptionService,
+    private readonly createSubscriptionSaga: CreateSubscriptionSaga,
+    private readonly deleteSubscriptionSaga: DeleteSubscriptionSaga,
   ) {}
 
   async subscribe(
     @Payload() subscribeEmailDto: SubscribeEmailRequestDto,
   ): Promise<void> {
-    return await this.subscriptionService.subscribe(subscribeEmailDto);
+    return await this.createSubscriptionSaga.start(subscribeEmailDto);
   }
 
   async getAllSubscribers(): Promise<Subscribers> {
@@ -35,6 +39,6 @@ export class SubscriptionController implements SubscriptionServiceController {
   async unsubscribe(
     @Payload() unsubscribeEmailDto: UnsubscribeEmailRequestDto,
   ): Promise<void> {
-    return await this.subscriptionService.unsubscribe(unsubscribeEmailDto);
+    return await this.deleteSubscriptionSaga.start(unsubscribeEmailDto);
   }
 }
