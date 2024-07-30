@@ -1,33 +1,19 @@
-import { Module, Provider } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ClientsModule, RmqOptions } from '@nestjs/microservices';
 
-import { SUBSCRIPTION_REPOSITORY, SUBSCRIPTION_SERVICE } from './interfaces';
-import { SubscriptionRepository } from './repositories';
-import { CreateSubscriptionSaga } from './sagas/create-subscription';
 import {
   CreateLocalSubscriptionStep,
   CreateNotificationDBSubscriptionStep,
 } from './sagas/create-subscription/steps';
-import { DeleteSubscriptionSaga } from './sagas/delete-subscription';
 import {
   DeleteLocalSubscriptionStep,
   DeleteNotificationDBSubscriptionStep,
 } from './sagas/delete-subscription/steps';
 import { NOTIFICATION_CLIENT } from './subscription.constants';
 import { SubscriptionController } from './subscription.controller';
-import { SubscriptionService } from './subscription.service';
+import { subscriptionProviders } from './subscription.providers';
 import { AppConfigModule, AppConfigService } from '../config/app-config';
 import { DatabaseModule } from '../database/database.module';
-
-const SubscriptionRepositoryImpl: Provider = {
-  provide: SUBSCRIPTION_REPOSITORY,
-  useClass: SubscriptionRepository,
-};
-
-const SubscriptionServiceImpl: Provider = {
-  provide: SUBSCRIPTION_SERVICE,
-  useClass: SubscriptionService,
-};
 
 @Module({
   imports: [
@@ -47,15 +33,12 @@ const SubscriptionServiceImpl: Provider = {
   ],
   controllers: [SubscriptionController],
   providers: [
-    SubscriptionRepositoryImpl,
-    SubscriptionServiceImpl,
+    ...subscriptionProviders,
     CreateLocalSubscriptionStep,
     CreateNotificationDBSubscriptionStep,
-    CreateSubscriptionSaga,
     DeleteLocalSubscriptionStep,
     DeleteNotificationDBSubscriptionStep,
-    DeleteSubscriptionSaga,
   ],
-  exports: [SubscriptionServiceImpl],
+  exports: [...subscriptionProviders],
 })
 export class SubscriptionModule {}
