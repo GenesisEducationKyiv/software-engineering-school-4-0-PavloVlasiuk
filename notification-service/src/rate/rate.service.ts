@@ -13,7 +13,7 @@ export class RateService implements IRateService {
     private readonly rateModel: Model<RateDocument>,
   ) {}
 
-  async createCurrent({ rate, exchangeDate }: UpdateRateDto) {
+  async createCurrent({ rate, exchangeDate }: UpdateRateDto): Promise<void> {
     const newRate = new this.rateModel({ value: rate, exchangeDate });
 
     await newRate.save();

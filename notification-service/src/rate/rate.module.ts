@@ -16,5 +16,6 @@ import { Rate, RateSchema } from './schemas';
   ],
   controllers: [RateConroller],
   providers: [...rateProviders],
+  exports: [...rateProviders],
 })
 export class RateModule {}
