@@ -6,9 +6,10 @@ import {
   UnsubscribeEmailRequestDto,
 } from './dto/requests';
 import { SubscribersResponse } from './dto/responses';
+import { Subscription } from './entities';
 import { ISubscriptionService, SUBSCRIPTION_SERVICE } from './interfaces';
-import { CreateSubscriptionSaga } from './sagas/create-subscription';
-import { DeleteSubscriptionSaga } from './sagas/delete-subscription';
+import { ISaga } from './sagas/interfaces';
+import { SAGAS } from './subscription.constants';
 import {
   Subscribers,
   SubscriptionServiceController,
@@ -21,8 +22,10 @@ export class SubscriptionController implements SubscriptionServiceController {
   constructor(
     @Inject(SUBSCRIPTION_SERVICE)
     private readonly subscriptionService: ISubscriptionService,
-    private readonly createSubscriptionSaga: CreateSubscriptionSaga,
-    private readonly deleteSubscriptionSaga: DeleteSubscriptionSaga,
+    @Inject(SAGAS.CREATE_SUBSCRIPTION)
+    private readonly createSubscriptionSaga: ISaga<Partial<Subscription>>,
+    @Inject(SAGAS.DELETE_SUBSCRIPTION)
+    private readonly deleteSubscriptionSaga: ISaga<Partial<Subscription>>,
   ) {}
 
   async subscribe(
