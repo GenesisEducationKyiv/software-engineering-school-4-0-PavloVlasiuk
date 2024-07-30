@@ -44,7 +44,6 @@ export class SubscriptionService implements ISubscriptionService {
   }
 
   async getAllSubscribers(): Promise<Subscription[]> {
-    console.log(await this.subscriptionModel.find().exec());
     return this.subscriptionModel.find().exec();
   }
 

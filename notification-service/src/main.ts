@@ -36,5 +36,7 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
 
   await app.startAllMicroservices();
+
+  await app.listen(0);
 }
 bootstrap();

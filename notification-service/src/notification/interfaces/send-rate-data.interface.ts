@@ -1,7 +1,6 @@
-import { IExchangeRate } from './exchange-rate.interface';
+import { Rate } from '../../rate/schemas';
 
 export interface ISendRateData {
-  subscriberId: string;
-  subscriberEmail: string;
-  exchangeRate: IExchangeRate;
+  email: string;
+  rate: Rate;
 }

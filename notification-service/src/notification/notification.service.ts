@@ -10,25 +10,23 @@ import {
 @Injectable()
 export class NotificationService implements INotificationService {
   constructor(
-    @Inject(MAILING_SERVICE) private readonly mailingService: IMailingService,
+    @Inject(MAILING_SERVICE)
+    private readonly mailingService: IMailingService,
   ) {}
 
-  async sendRateEmail({
-    subscriberEmail,
-    exchangeRate,
-  }: ISendRateData): Promise<void> {
+  async sendRateEmail({ email, rate }: ISendRateData): Promise<void> {
     const context: ISendCurrentRateContext = {
-      rate: exchangeRate.rate,
-      date: new Date(exchangeRate.exchangeDate).toDateString(),
+      rate: rate.value,
+      date: new Date(rate.exchangeDate).toDateString(),
     };
 
     try {
       await this.mailingService.sendTemplatedEmail({
-        to: subscriberEmail,
+        to: email,
         context,
       });
     } catch (error) {
-      throw error;
+      console.log(`Email to ${email} failed to sent`);
     }
   }
 }

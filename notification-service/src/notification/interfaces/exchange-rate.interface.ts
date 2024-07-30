@@ -1,4 +1,4 @@
 export interface IExchangeRate {
-  rate: number;
+  value: number;
   exchangeDate: string;
 }
