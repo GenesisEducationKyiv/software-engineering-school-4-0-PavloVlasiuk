@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
-import { LoggerModule } from 'nestjs-pino';
+import { LoggerModule, Params } from 'nestjs-pino';
 
-import { AppConfigModule } from './config/app-config';
+import { AppConfigModule, AppConfigService } from './config/app-config';
 import { RateModule } from './rate/rate.module';
 import { RateSyncScheduleModule } from './rate-sync-schedule/rate-sync-schedule.module';
 
@@ -12,16 +12,12 @@ import { RateSyncScheduleModule } from './rate-sync-schedule/rate-sync-schedule.
     RateModule,
     RateSyncScheduleModule,
     ScheduleModule.forRoot(),
-    LoggerModule.forRoot({
-      pinoHttp: {
-        autoLogging: false,
-        transport: {
-          target: 'pino-pretty',
-          options: {
-            singleLine: true,
-          },
-        },
+    LoggerModule.forRootAsync({
+      imports: [AppConfigModule],
+      useFactory: (config: AppConfigService) => {
+        return config.get<Params>('logger.params');
       },
+      inject: [AppConfigService],
     }),
   ],
 })

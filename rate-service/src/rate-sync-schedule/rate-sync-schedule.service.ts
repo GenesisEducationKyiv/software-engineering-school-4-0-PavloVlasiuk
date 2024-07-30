@@ -4,7 +4,11 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { lastValueFrom } from 'rxjs';
 
 import { IRateSyncScheduleService } from './interfaces';
-import { NOTIFICATION_CLIENT, TIMEZONE } from './rate-sync-schedule.constants';
+import {
+  COMMANDS,
+  NOTIFICATION_CLIENT,
+  TIMEZONE,
+} from './rate-sync-schedule.constants';
 import { IResponse } from '../common/interfaces';
 import { IRateService, RATE_SERVICE } from '../rate/interfaces';
 
@@ -26,7 +30,7 @@ export class RateSyncScheduleService implements IRateSyncScheduleService {
     const exchangeRate = await this.rateService.getCurrentRate();
 
     const response = await lastValueFrom<IResponse>(
-      this.notificationClient.send('rate-synchronize', exchangeRate),
+      this.notificationClient.send(COMMANDS.RATE_SYNCHRONIZE, exchangeRate),
     );
 
     if (!response.success) {

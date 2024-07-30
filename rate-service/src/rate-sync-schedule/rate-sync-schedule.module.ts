@@ -1,27 +1,26 @@
 import { Module } from '@nestjs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ClientsModule, RmqOptions } from '@nestjs/microservices';
 
 import { NOTIFICATION_CLIENT } from './rate-sync-schedule.constants';
 import { rateSyncScheduleProviders } from './rate-sync-schedule.providers';
+import { AppConfigModule, AppConfigService } from '../config/app-config';
 import { RateModule } from '../rate/rate.module';
 
 @Module({
   imports: [
-    ClientsModule.register([
-      {
-        name: NOTIFICATION_CLIENT,
-        transport: Transport.RMQ,
-        options: {
-          urls: [process.env.RABBITMQ_URL],
-          queue: process.env.RABBITMQ_QUEUE,
-          persistent: true,
-          queueOptions: {
-            durable: true,
-          },
-        },
-      },
-    ]),
     RateModule,
+    ClientsModule.registerAsync({
+      clients: [
+        {
+          name: NOTIFICATION_CLIENT,
+          imports: [AppConfigModule],
+          useFactory: (config: AppConfigService) => {
+            return config.get<RmqOptions>('rabbitmq.notificationClientOptions');
+          },
+          inject: [AppConfigService],
+        },
+      ],
+    }),
   ],
   providers: [...rateSyncScheduleProviders],
 })
