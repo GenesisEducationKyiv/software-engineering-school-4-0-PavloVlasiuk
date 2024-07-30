@@ -1,5 +1,5 @@
 import { Module, Provider } from '@nestjs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ClientsModule, RmqOptions } from '@nestjs/microservices';
 
 import { SUBSCRIPTION_REPOSITORY, SUBSCRIPTION_SERVICE } from './interfaces';
 import { SubscriptionRepository } from './repositories';
@@ -13,8 +13,10 @@ import {
   DeleteLocalSubscriptionStep,
   DeleteNotificationDBSubscriptionStep,
 } from './sagas/delete-subscription/steps';
+import { NOTIFICATION_CLIENT } from './subscription.constants';
 import { SubscriptionController } from './subscription.controller';
 import { SubscriptionService } from './subscription.service';
+import { AppConfigModule, AppConfigService } from '../config/app-config';
 import { DatabaseModule } from '../database/database.module';
 
 const SubscriptionRepositoryImpl: Provider = {
@@ -30,20 +32,18 @@ const SubscriptionServiceImpl: Provider = {
 @Module({
   imports: [
     DatabaseModule,
-    ClientsModule.register([
-      {
-        name: 'client',
-        transport: Transport.RMQ,
-        options: {
-          urls: [process.env.RABBITMQ_URL],
-          queue: 'subscription_queue',
-          persistent: true,
-          queueOptions: {
-            durable: true,
+    ClientsModule.registerAsync({
+      clients: [
+        {
+          name: NOTIFICATION_CLIENT,
+          imports: [AppConfigModule],
+          useFactory: (config: AppConfigService) => {
+            return config.get<RmqOptions>('rabbitmq.notificationClientOptions');
           },
+          inject: [AppConfigService],
         },
-      },
-    ]),
+      ],
+    }),
   ],
   controllers: [SubscriptionController],
   providers: [
