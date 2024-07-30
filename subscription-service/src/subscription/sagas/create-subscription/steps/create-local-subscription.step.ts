@@ -2,8 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { Subscription } from '../../../entities';
 import {
-  ISubscriptionRepository,
-  SUBSCRIPTION_REPOSITORY,
+  ISubscriptionService,
+  SUBSCRIPTION_SERVICE,
 } from '../../../interfaces';
 import { IStep } from '../../interfaces';
 
@@ -12,19 +12,19 @@ export class CreateLocalSubscriptionStep
   implements IStep<Partial<Subscription>>
 {
   constructor(
-    @Inject(SUBSCRIPTION_REPOSITORY)
-    private readonly subscriptionRepository: ISubscriptionRepository,
+    @Inject(SUBSCRIPTION_SERVICE)
+    private readonly subscriptionService: ISubscriptionService,
   ) {}
 
   async execute({ email }: Partial<Subscription>): Promise<void> {
     console.log('Local transaction');
 
-    await this.subscriptionRepository.createOrUpdate(email);
+    await this.subscriptionService.subscribe({ email });
   }
 
   async compensate({ email }: Partial<Subscription>): Promise<void> {
     console.log('Local compensate transaction');
 
-    await this.subscriptionRepository.deleteByEmail(email);
+    await this.subscriptionService.unsubscribe({ email });
   }
 }

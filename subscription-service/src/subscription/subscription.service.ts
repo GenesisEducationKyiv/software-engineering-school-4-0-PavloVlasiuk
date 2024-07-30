@@ -14,16 +14,12 @@ import {
   SUBSCRIPTION_REPOSITORY,
   ISubscriptionService,
 } from './interfaces';
-import { CreateSubscriptionSaga } from './sagas/create-subscription';
-import { DeleteSubscriptionSaga } from './sagas/delete-subscription';
 
 @Injectable()
 export class SubscriptionService implements ISubscriptionService {
   constructor(
     @Inject(SUBSCRIPTION_REPOSITORY)
     private readonly subscriptionRepository: ISubscriptionRepository,
-    private readonly createSubscriptionSaga: CreateSubscriptionSaga,
-    private readonly deleteSubscriptionSaga: DeleteSubscriptionSaga,
   ) {}
 
   async subscribe(data: SubscribeEmailRequestDto): Promise<void> {
@@ -34,7 +30,7 @@ export class SubscriptionService implements ISubscriptionService {
 
     if (alreadySubscribed) throw new AlreadySubscribedException();
 
-    return this.createSubscriptionSaga.start(data);
+    await this.subscriptionRepository.createOrUpdate(email);
   }
 
   async getAllSubscribers(): Promise<Subscription[]> {
@@ -48,7 +44,7 @@ export class SubscriptionService implements ISubscriptionService {
 
     if (!isSubscribed) throw new EntityNotFoundException('Subscription');
 
-    return this.deleteSubscriptionSaga.start(data);
+    await this.subscriptionRepository.deleteByEmail(email);
   }
 
   private async isSubscribed(email: string): Promise<Subscription | null> {
