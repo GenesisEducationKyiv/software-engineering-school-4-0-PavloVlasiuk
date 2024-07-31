@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package notification;
+
+service NotificationService {
+  rpc SendRateEmail(SendEmailRequest) returns (Empty) {}
+}
+
+message Empty {}
+
+message Rate {
+  float rate = 1;
+  string exchangeDate = 2;
+}
+
+message Recipient {
+  string email = 1;
+}
+
+message SendEmailRequest {
+  Rate rate = 1;
+  repeated Recipient recipients = 2;
+}
