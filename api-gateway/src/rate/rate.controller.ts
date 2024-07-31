@@ -1,13 +1,12 @@
 import { Controller, Get, Inject, OnModuleInit } from '@nestjs/common';
 import { ClientGrpc, RpcException } from '@nestjs/microservices';
-import { Observable, catchError, throwError } from 'rxjs';
-
 import {
   RATE_PACKAGE_NAME,
   RATE_SERVICE_NAME,
   Rate,
   RateServiceClient,
-} from '../../../proto/dist/types/rate';
+} from '@usd-to-uah-rate-api/proto/dist/rate';
+import { Observable, catchError, throwError } from 'rxjs';
 
 @Controller('rate')
 export class RateController implements OnModuleInit {

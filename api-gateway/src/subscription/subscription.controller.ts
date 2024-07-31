@@ -8,19 +8,19 @@ import {
   Post,
 } from '@nestjs/common';
 import { ClientGrpc, RpcException } from '@nestjs/microservices';
+import { Empty } from '@usd-to-uah-rate-api/proto/dist';
+import {
+  SUBSCRIPTION_PACKAGE_NAME,
+  SUBSCRIPTION_SERVICE_NAME,
+  Subscribers,
+  SubscriptionServiceClient,
+} from '@usd-to-uah-rate-api/proto/dist/subscription';
 import { Observable, catchError, throwError } from 'rxjs';
 
 import {
   SubscribeEmailRequestDto,
   UnsubscribeEmailRequestDto,
 } from './dto/requests';
-import {
-  Empty,
-  SUBSCRIPTION_PACKAGE_NAME,
-  SUBSCRIPTION_SERVICE_NAME,
-  Subscribers,
-  SubscriptionServiceClient,
-} from '../../../proto/dist/types/subscription';
 
 @Controller('subscription')
 export class SubscriptionController implements OnModuleInit {

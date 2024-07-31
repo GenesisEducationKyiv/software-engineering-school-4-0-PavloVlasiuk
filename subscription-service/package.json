@@ -37,6 +37,7 @@
     "@nestjs/microservices": "^10.3.10",
     "@nestjs/platform-express": "^10.0.0",
     "@prisma/client": "^5.16.1",
+    "@usd-to-uah-rate-api/proto": "^1.0.4",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.4",
     "class-transformer": "^0.5.1",
