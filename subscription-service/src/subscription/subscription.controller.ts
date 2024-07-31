@@ -1,5 +1,10 @@
 import { Controller, Inject } from '@nestjs/common';
 import { Payload } from '@nestjs/microservices';
+import {
+  Subscribers,
+  SubscriptionServiceController,
+  SubscriptionServiceControllerMethods,
+} from '@usd-to-uah-rate-api/proto/dist/subscription';
 
 import {
   SubscribeEmailRequestDto,
@@ -10,11 +15,6 @@ import { Subscription } from './entities';
 import { ISubscriptionService, SUBSCRIPTION_SERVICE } from './interfaces';
 import { ISaga } from './sagas/interfaces';
 import { SAGAS } from './subscription.constants';
-import {
-  Subscribers,
-  SubscriptionServiceController,
-  SubscriptionServiceControllerMethods,
-} from '../../../proto/dist/types/subscription';
 
 @Controller()
 @SubscriptionServiceControllerMethods()
