@@ -8,6 +8,7 @@ import {
 
 import { UpdateRateDto } from './dto';
 import { IRateService, RATE_SERVICE } from './interfaces';
+import { MESSAGE_PATTERNS } from './rate.constants';
 import { SuccessfulResponse } from '../common/responses';
 import { IResponse } from '../common/responses/interfaces';
 
@@ -18,7 +19,7 @@ export class RateConroller {
     private readonly rateService: IRateService,
   ) {}
 
-  @MessagePattern('rate-synchronize')
+  @MessagePattern(MESSAGE_PATTERNS.RATE_SYNCHRONIZE)
   async createCurrent(
     @Payload() dto: UpdateRateDto,
     @Ctx() context: RmqContext,

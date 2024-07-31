@@ -40,7 +40,7 @@ export class SubscriptionService implements ISubscriptionService {
       throw new EntityNotFoundException(Subscription.name);
     }
 
-    await this.subscriptionModel.findOneAndDelete({ email }).exec();
+    await this.subscriptionModel.findOneAndDelete(unsubscribeEmailDto).exec();
   }
 
   async getAllSubscribers(): Promise<Subscription[]> {

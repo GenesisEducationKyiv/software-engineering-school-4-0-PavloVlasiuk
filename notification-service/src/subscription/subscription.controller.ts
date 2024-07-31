@@ -8,6 +8,7 @@ import {
 
 import { SubscribeEmailDto, UnsubscribeEmailDto } from './dto';
 import { ISubscriptionService, SUBSCRIPTION_SERVICE } from './interfaces';
+import { MESSAGE_PATTERNS } from './subscription.constants';
 import { SuccessfulResponse } from '../common/responses';
 import { IResponse } from '../common/responses/interfaces';
 
@@ -18,7 +19,7 @@ export class SubscriptionController {
     private readonly subscriptionService: ISubscriptionService,
   ) {}
 
-  @MessagePattern('subscription-create')
+  @MessagePattern(MESSAGE_PATTERNS.SUBSCRIPTION_CREATE)
   async subscribe(
     @Payload() dto: SubscribeEmailDto,
     @Ctx() context: RmqContext,
@@ -42,7 +43,7 @@ export class SubscriptionController {
     }
   }
 
-  @MessagePattern('subscription-delete')
+  @MessagePattern(MESSAGE_PATTERNS.SUBSCRIPTION_DELETE)
   async unsubscribe(
     @Payload() dto: UnsubscribeEmailDto,
     @Ctx() context: RmqContext,
