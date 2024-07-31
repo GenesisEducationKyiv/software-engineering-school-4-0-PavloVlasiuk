@@ -7,11 +7,9 @@
 /* eslint-disable */
 import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
 import { Observable } from "rxjs";
+import { Empty } from "../google/protobuf/empty.type";
 
 export const protobufPackage = "rate";
-
-export interface Empty {
-}
 
 export interface Rate {
   rate: number;

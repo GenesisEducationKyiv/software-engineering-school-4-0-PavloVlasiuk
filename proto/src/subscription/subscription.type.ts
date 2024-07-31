@@ -7,6 +7,7 @@
 /* eslint-disable */
 import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
 import { Observable } from "rxjs";
+import { Empty } from "../google/protobuf/empty.type";
 
 export const protobufPackage = "subscription";
 
@@ -16,9 +17,6 @@ export interface SubscribeEmailDto {
 
 export interface UnsubscribeEmailDto {
   email: string;
-}
-
-export interface Empty {
 }
 
 export interface Subscriber {
@@ -41,11 +39,11 @@ export interface SubscriptionServiceClient {
 }
 
 export interface SubscriptionServiceController {
-  subscribe(request: SubscribeEmailDto): Promise<Empty> | Observable<Empty> | Empty;
+  subscribe(request: SubscribeEmailDto): void;
 
   getAllSubscribers(request: Empty): Promise<Subscribers> | Observable<Subscribers> | Subscribers;
 
-  unsubscribe(request: UnsubscribeEmailDto): Promise<Empty> | Observable<Empty> | Empty;
+  unsubscribe(request: UnsubscribeEmailDto): void;
 }
 
 export function SubscriptionServiceControllerMethods() {

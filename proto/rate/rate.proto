@@ -1,12 +1,12 @@
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";
+
 package rate;
 
 service RateService {
-  rpc GetCurrentRate(Empty) returns (Rate) {}
+  rpc GetCurrentRate(google.protobuf.Empty) returns (Rate) {}
 }
-
-message Empty {}
 
 message Rate {
   float rate = 1;
