@@ -5,7 +5,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 
 import { NodeMailerService } from './node-mailer.service';
 import { DEFAULT_EMAIL_SUBJECT } from '../email.constants';
-import { ISendEmailOptions } from '../interfaces/send-email-options.interface';
+import { ISendEmailOptions } from '../interfaces';
 
 describe('NodeMailerService', () => {
   let nodeMailerService: NodeMailerService;

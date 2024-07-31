@@ -1,17 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { RateResponseDto } from './dtos/responses/rate.response.dto';
-import { IExchangeRate } from './interfaces';
+import { RateResponseDto } from './dtos/responses';
 import {
+  IExchangeRate,
   IRateClient,
-  RATE_CLIENT_TOKEN,
-} from './interfaces/rate-client.interface';
+  RATE_CLIENT,
+  IRateService,
+} from './interfaces';
 
 @Injectable()
-export class RateService {
-  constructor(
-    @Inject(RATE_CLIENT_TOKEN) private readonly rateClient: IRateClient,
-  ) {}
+export class RateService implements IRateService {
+  constructor(@Inject(RATE_CLIENT) private readonly rateClient: IRateClient) {}
 
   async getCurrentRate(): Promise<IExchangeRate> {
     const rate = await this.rateClient.getRate();

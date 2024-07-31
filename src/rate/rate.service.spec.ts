@@ -5,12 +5,18 @@ import { of, throwError } from 'rxjs';
 
 import { IGetNBURate, NBUClient } from './clients';
 import { RateClientException } from './exceptions';
-import { IExchangeRate, IRateClient, RATE_CLIENT_TOKEN } from './interfaces';
+import {
+  IExchangeRate,
+  IRateClient,
+  IRateService,
+  RATE_CLIENT,
+  RATE_SERVICE,
+} from './interfaces';
 import { RateService } from './rate.service';
 import { AppConfigModule } from '../config/app-config.module';
 
 describe('RateService', () => {
-  let rateService: RateService;
+  let rateService: IRateService;
   let rateClient: IRateClient;
   let httpService: HttpService;
 
@@ -18,15 +24,15 @@ describe('RateService', () => {
     const testingModule: TestingModule = await Test.createTestingModule({
       imports: [HttpModule, AppConfigModule, LoggerModule.forRoot()],
       providers: [
-        RateService,
-        NBUClient,
+        { provide: RATE_SERVICE, useClass: RateService },
         {
-          provide: RATE_CLIENT_TOKEN,
+          provide: RATE_CLIENT,
           useFactory(nbuClient: NBUClient) {
             return nbuClient;
           },
           inject: [NBUClient],
         },
+        NBUClient,
       ],
     })
       .useMocker((token) => {
@@ -38,8 +44,8 @@ describe('RateService', () => {
       })
       .compile();
 
-    rateService = testingModule.get<RateService>(RateService);
-    rateClient = testingModule.get<IRateClient>(RATE_CLIENT_TOKEN);
+    rateService = testingModule.get<IRateService>(RATE_SERVICE);
+    rateClient = testingModule.get<IRateClient>(RATE_CLIENT);
     httpService = testingModule.get<HttpService>(HttpService);
   });
 

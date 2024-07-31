@@ -1,27 +1,27 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { ITaskScheduleService, TASK_SCHEDULE_SERVICE } from './interfaces';
 import { TaskScheduleService } from './task-schedule.service';
-import { EmailService } from '../email/services/email.service';
-import { IExchangeRate } from '../rate/interfaces';
-import { RateService } from '../rate/rate.service';
+import { EMAIL_SERVICE, IEmailService } from '../email/interfaces';
+import { IExchangeRate, IRateService, RATE_SERVICE } from '../rate/interfaces';
 
 describe('TaskScheduleService', () => {
-  let taskScheduleService: TaskScheduleService;
-  let rateService: RateService;
-  let emailService: EmailService;
+  let taskScheduleService: ITaskScheduleService;
+  let rateService: IRateService;
+  let emailService: IEmailService;
 
   beforeEach(async () => {
     const testingModule: TestingModule = await Test.createTestingModule({
       providers: [
-        TaskScheduleService,
+        { provide: TASK_SCHEDULE_SERVICE, useClass: TaskScheduleService },
         {
-          provide: RateService,
+          provide: RATE_SERVICE,
           useValue: {
             getCurrentRate: jest.fn(),
           },
         },
         {
-          provide: EmailService,
+          provide: EMAIL_SERVICE,
           useValue: {
             sendRate: jest.fn(),
           },
@@ -29,10 +29,11 @@ describe('TaskScheduleService', () => {
       ],
     }).compile();
 
-    taskScheduleService =
-      testingModule.get<TaskScheduleService>(TaskScheduleService);
-    rateService = testingModule.get<RateService>(RateService);
-    emailService = testingModule.get<EmailService>(EmailService);
+    taskScheduleService = testingModule.get<ITaskScheduleService>(
+      TASK_SCHEDULE_SERVICE,
+    );
+    rateService = testingModule.get<IRateService>(RATE_SERVICE);
+    emailService = testingModule.get<IEmailService>(EMAIL_SERVICE);
   });
 
   it('should be defined', () => {

@@ -1,34 +1,37 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Email } from '@prisma/client';
 
-import { EmailRepository } from '../../database/repositories/email.repository';
 import { IExchangeRate } from '../../rate/interfaces';
 import { SubscribeEmailDto } from '../dtos/subscribe-email.dto';
+import { Email } from '../entities/email.entity';
 import { AlreadySubscribedException } from '../exceptions';
 import {
+  IEmailRepository,
   IMailingService,
   MAILING_SERVICE,
-} from '../interfaces/mailing-service.interface';
-import { ISendCurrentRateContext } from '../interfaces/send-email-options.interface';
+  ISendCurrentRateContext,
+  EMAIL_REPOSITORY,
+  IEmailService,
+} from '../interfaces';
 
 @Injectable()
-export class EmailService {
+export class EmailService implements IEmailService {
   constructor(
-    private readonly emailRepository: EmailRepository,
+    @Inject(EMAIL_REPOSITORY)
+    private readonly emailRepository: IEmailRepository,
     @Inject(MAILING_SERVICE)
     private readonly mailingService: IMailingService,
   ) {}
 
   async subscribe({ email }: SubscribeEmailDto): Promise<void> {
-    const alreadySubscribed = await this.emailRepository.find({ email });
+    const alreadySubscribed = await this.emailRepository.findByEmail(email);
 
     if (alreadySubscribed) throw new AlreadySubscribedException();
 
-    await this.emailRepository.create({ email });
+    await this.emailRepository.create(email);
   }
 
   async sendRate({ rate }: IExchangeRate): Promise<void> {
-    const subscribers: Array<Email> = await this.getAllSubscribers();
+    const subscribers: Email[] = await this.getAllSubscribers();
 
     const context: ISendCurrentRateContext = {
       rate,
@@ -45,7 +48,7 @@ export class EmailService {
     Promise.all(emailPromises);
   }
 
-  private async getAllSubscribers(): Promise<Array<Email>> {
-    return this.emailRepository.findMany();
+  private async getAllSubscribers(): Promise<Email[]> {
+    return this.emailRepository.findAll();
   }
 }

@@ -2,30 +2,33 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Email } from '@prisma/client';
 
 import { EmailService } from './email.service';
-import { EmailRepository } from '../../database/repositories/email.repository';
 import { IExchangeRate } from '../../rate/interfaces';
 import { SubscribeEmailDto } from '../dtos/subscribe-email.dto';
 import { AlreadySubscribedException } from '../exceptions';
 import {
+  EMAIL_REPOSITORY,
+  EMAIL_SERVICE,
+  IEmailRepository,
+  IEmailService,
   IMailingService,
   MAILING_SERVICE,
-} from '../interfaces/mailing-service.interface';
+} from '../interfaces';
 
 describe('EmailService', () => {
-  let emailService: EmailService;
-  let emailRepository: EmailRepository;
+  let emailService: IEmailService;
+  let emailRepository: IEmailRepository;
   let mailingService: IMailingService;
 
   beforeEach(async () => {
     const testingModule: TestingModule = await Test.createTestingModule({
       providers: [
-        EmailService,
+        { provide: EMAIL_SERVICE, useClass: EmailService },
         {
-          provide: EmailRepository,
+          provide: EMAIL_REPOSITORY,
           useValue: {
-            find: jest.fn(),
-            findMany: jest.fn(),
             create: jest.fn(),
+            findByEmail: jest.fn(),
+            findAll: jest.fn(),
           },
         },
         {
@@ -37,8 +40,8 @@ describe('EmailService', () => {
       ],
     }).compile();
 
-    emailService = testingModule.get<EmailService>(EmailService);
-    emailRepository = testingModule.get<EmailRepository>(EmailRepository);
+    emailService = testingModule.get<IEmailService>(EMAIL_SERVICE);
+    emailRepository = testingModule.get<IEmailRepository>(EMAIL_REPOSITORY);
     mailingService = testingModule.get<IMailingService>(MAILING_SERVICE);
   });
 
@@ -52,14 +55,18 @@ describe('EmailService', () => {
         email: 'test.testovych@gmail.com',
       };
 
-      jest.spyOn(emailRepository, 'find').mockResolvedValue(null);
+      jest.spyOn(emailRepository, 'findByEmail').mockResolvedValue(null);
 
       await emailService.subscribe(subscribeEmailDto);
 
-      expect(emailRepository.find).toHaveBeenCalledWith(subscribeEmailDto);
-      expect(emailRepository.find).toHaveBeenCalledTimes(1);
+      expect(emailRepository.findByEmail).toHaveBeenCalledWith(
+        subscribeEmailDto.email,
+      );
+      expect(emailRepository.findByEmail).toHaveBeenCalledTimes(1);
 
-      expect(emailRepository.create).toHaveBeenCalledWith(subscribeEmailDto);
+      expect(emailRepository.create).toHaveBeenCalledWith(
+        subscribeEmailDto.email,
+      );
       expect(emailRepository.create).toHaveBeenCalledTimes(1);
     });
 
@@ -68,7 +75,7 @@ describe('EmailService', () => {
         email: 'test.testovych@gmail.com',
       };
 
-      jest.spyOn(emailRepository, 'find').mockResolvedValue({
+      jest.spyOn(emailRepository, 'findByEmail').mockResolvedValue({
         id: 'uuid',
         email: subscribeEmailDto.email,
         createdAt: new Date(),
@@ -85,7 +92,7 @@ describe('EmailService', () => {
 
       expect(exception).toBeInstanceOf(AlreadySubscribedException);
 
-      expect(emailRepository.find).toHaveBeenCalledTimes(1);
+      expect(emailRepository.findByEmail).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -117,7 +124,7 @@ describe('EmailService', () => {
         exchangeDate: new Date('2024-06-23').toISOString(),
       };
 
-      jest.spyOn(emailRepository, 'findMany').mockResolvedValue(subscribers);
+      jest.spyOn(emailRepository, 'findAll').mockResolvedValue(subscribers);
 
       jest
         .spyOn(mailingService, 'sendTemplatedEmail')
@@ -125,7 +132,7 @@ describe('EmailService', () => {
 
       await emailService.sendRate(currency);
 
-      expect(emailRepository.findMany).toHaveBeenCalledTimes(1);
+      expect(emailRepository.findAll).toHaveBeenCalledTimes(1);
 
       expect(mailingService.sendTemplatedEmail).toHaveBeenCalledTimes(
         subscribers.length,

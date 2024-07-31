@@ -1,11 +1,14 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Inject } from '@nestjs/common';
 
 import { RateResponseDto } from './dtos/responses/rate.response.dto';
-import { RateService } from './rate.service';
+import { IRateService, RATE_SERVICE } from './interfaces';
 
 @Controller('rate')
 export class RateController {
-  constructor(private readonly rateService: RateService) {}
+  constructor(
+    @Inject(RATE_SERVICE)
+    private readonly rateService: IRateService,
+  ) {}
 
   @Get()
   async getCurrentRate(): Promise<RateResponseDto> {

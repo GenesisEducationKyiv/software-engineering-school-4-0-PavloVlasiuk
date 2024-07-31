@@ -7,9 +7,13 @@ import { IExchangeRate } from '../../rate/interfaces';
 import { SubscribeEmailDto } from '../dtos/subscribe-email.dto';
 import { AlreadySubscribedException } from '../exceptions';
 import {
+  EMAIL_REPOSITORY,
+  EMAIL_SERVICE,
+  IEmailService,
   IMailingService,
   MAILING_SERVICE,
-} from '../interfaces/mailing-service.interface';
+} from '../interfaces';
+import { EmailRepository } from '../repositories/email.repository';
 
 describe('EmailService', () => {
   const subscribers: SubscribeEmailDto[] = [
@@ -24,7 +28,7 @@ describe('EmailService', () => {
     },
   ];
 
-  let emailService: EmailService;
+  let emailService: IEmailService;
   let mailingService: IMailingService;
   let prisma: PrismaService;
 
@@ -32,7 +36,8 @@ describe('EmailService', () => {
     const testingModule = await Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [
-        EmailService,
+        { provide: EMAIL_SERVICE, useClass: EmailService },
+        { provide: EMAIL_REPOSITORY, useClass: EmailRepository },
         {
           provide: MAILING_SERVICE,
           useValue: {
@@ -42,7 +47,7 @@ describe('EmailService', () => {
       ],
     }).compile();
 
-    emailService = testingModule.get<EmailService>(EmailService);
+    emailService = testingModule.get<IEmailService>(EMAIL_SERVICE);
     mailingService = testingModule.get<IMailingService>(MAILING_SERVICE);
     prisma = testingModule.get<PrismaService>(PrismaService);
 
