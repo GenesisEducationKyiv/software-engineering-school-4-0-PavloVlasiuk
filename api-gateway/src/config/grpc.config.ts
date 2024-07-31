@@ -1,3 +1,4 @@
+import { ChannelOptions } from '@grpc/grpc-js';
 import { registerAs } from '@nestjs/config';
 
 export default registerAs(
@@ -11,5 +12,8 @@ export default registerAs(
       host: process.env.SUBSCRIPTION_SERVICE_HOST,
       port: process.env.SUBSCRIPTION_SERVICE_PORT,
     },
+    channelOptions: {
+      'grpc.max_reconnect_backoff_ms': 3000,
+    } as ChannelOptions,
   }),
 );
