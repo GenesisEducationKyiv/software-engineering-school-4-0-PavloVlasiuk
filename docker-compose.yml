@@ -107,10 +107,30 @@ services:
     networks: 
       - net
 
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    networks:
+      - net
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: always
+    ports:
+      - '3001:3000'
+    volumes:
+      - grafana-storage:/var/lib/grafana
+
 volumes:
   postgres_data:
   rabbitmq_data:
   mongo_data:
+  grafana-storage:
 
 networks:
   net:
