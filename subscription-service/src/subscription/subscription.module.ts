@@ -14,10 +14,12 @@ import { SubscriptionController } from './subscription.controller';
 import { subscriptionProviders } from './subscription.providers';
 import { AppConfigModule, AppConfigService } from '../config/app-config';
 import { DatabaseModule } from '../database/database.module';
+import { MetricsModule } from '../metrics/metrics.module';
 
 @Module({
   imports: [
     DatabaseModule,
+    MetricsModule,
     ClientsModule.registerAsync({
       clients: [
         {

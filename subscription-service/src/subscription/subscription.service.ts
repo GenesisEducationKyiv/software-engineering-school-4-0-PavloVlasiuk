@@ -15,6 +15,10 @@ import {
   SUBSCRIPTION_REPOSITORY,
   ISubscriptionService,
 } from './interfaces';
+import {
+  ISubscriptionMetricsService,
+  SUBSCRIPTION_METRICS_SERVICE,
+} from '../metrics/interfaces';
 
 @Injectable()
 export class SubscriptionService implements ISubscriptionService {
@@ -23,6 +27,8 @@ export class SubscriptionService implements ISubscriptionService {
     private readonly subscriptionRepository: ISubscriptionRepository,
     @InjectPinoLogger(SubscriptionService.name)
     private readonly logger: PinoLogger,
+    @Inject(SUBSCRIPTION_METRICS_SERVICE)
+    private readonly metricsService: ISubscriptionMetricsService,
   ) {}
 
   async subscribe(data: SubscribeEmailRequestDto): Promise<void> {
@@ -38,6 +44,8 @@ export class SubscriptionService implements ISubscriptionService {
     if (alreadySubscribed) throw new AlreadySubscribedException();
 
     await this.subscriptionRepository.createOrUpdate(email);
+    console.log('sub');
+    this.metricsService.incSubscriptionCreatedCounter();
   }
 
   async getAllSubscribers(): Promise<Subscription[]> {
@@ -56,6 +64,8 @@ export class SubscriptionService implements ISubscriptionService {
     if (!isSubscribed) throw new EntityNotFoundException('Subscription');
 
     await this.subscriptionRepository.deleteByEmail(email);
+
+    this.metricsService.incSubscriptionDeletedCounter();
   }
 
   private async isSubscribed(email: string): Promise<Subscription | null> {

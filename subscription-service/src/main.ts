@@ -6,19 +6,18 @@ import { SUBSCRIPTION_PACKAGE_NAME } from '@usd-to-uah-rate-api/proto/dist/subsc
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
-    {
-      transport: Transport.GRPC,
-      options: {
-        package: SUBSCRIPTION_PACKAGE_NAME,
-        protoPath:
-          'node_modules/@usd-to-uah-rate-api/proto/subscription/subscription.proto',
+  const app = await NestFactory.create(AppModule);
 
-        url: `${process.env.HOST}:${process.env.PORT}`,
-      },
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.GRPC,
+    options: {
+      package: SUBSCRIPTION_PACKAGE_NAME,
+      protoPath:
+        'node_modules/@usd-to-uah-rate-api/proto/subscription/subscription.proto',
+
+      url: `${process.env.HOST}:${process.env.PORT}`,
     },
-  );
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -30,7 +29,9 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen();
+  app.startAllMicroservices();
+
+  await app.listen(process.env.HTTP_PORT);
 }
 
 bootstrap();
