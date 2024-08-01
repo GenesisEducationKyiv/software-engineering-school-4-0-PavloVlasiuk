@@ -8,6 +8,10 @@ import {
   RATE_CLIENT,
   IRateService,
 } from './interfaces';
+import {
+  IRateMetricsService,
+  RATE_METRICS_SERVICE,
+} from '../metrics/interfaces';
 
 @Injectable()
 export class RateService implements IRateService {
@@ -16,15 +20,21 @@ export class RateService implements IRateService {
     private readonly rateClient: IRateClient,
     @InjectPinoLogger(RateService.name)
     private readonly logger: PinoLogger,
+    @Inject(RATE_METRICS_SERVICE)
+    private readonly metricsService: IRateMetricsService,
   ) {}
 
   async getCurrentRate(): Promise<IExchangeRate> {
     try {
       const rate = await this.rateClient.getRate();
 
+      this.metricsService.incRateFetchedCounter();
+
       return new RateResponseDto(rate);
     } catch (error) {
       this.logger.error(`Failed to fetch exchange rate: ${error}`);
+
+      this.metricsService.incRateFetchingFailedCounter();
 
       throw error;
     }

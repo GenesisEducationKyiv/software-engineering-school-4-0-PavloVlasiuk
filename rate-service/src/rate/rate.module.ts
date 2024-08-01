@@ -13,6 +13,7 @@ import { RateController } from './rate.controller';
 import { RateService } from './rate.service';
 import { AppConfigModule } from '../config/app-config';
 import { AppConfigService } from '../config/app-config/app-config.service';
+import { MetricsModule } from '../metrics/metrics.module';
 
 const RateServiceImpl: Provider = {
   provide: RATE_SERVICE,
@@ -55,6 +56,7 @@ const RateClientImpl: Provider = {
       inject: [AppConfigService],
     }),
     AppConfigModule,
+    MetricsModule,
   ],
   controllers: [RateController],
   providers: [
