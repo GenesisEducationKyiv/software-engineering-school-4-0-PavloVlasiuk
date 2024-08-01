@@ -18,6 +18,7 @@ FROM node:18-alpine
 
 WORKDIR /app
 
+COPY --chown=node:node --from=build /app/mail/templates ./mail/templates
 COPY --chown=node:node --from=build /app/.env .
 COPY --chown=node:node --from=build /app/dist ./dist
 COPY --chown=node:node --from=build /app/node_modules ./node_modules

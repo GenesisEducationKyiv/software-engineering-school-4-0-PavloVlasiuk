@@ -1,4 +1,4 @@
-version: '3'
+version: '3.9'
 
 services:
   postgres:
@@ -9,6 +9,11 @@ services:
       - net
     ports:
       - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -18,6 +23,12 @@ services:
     env_file:
       - ./notification-service/.env
     restart: always
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
     networks: 
       - net
     ports:
@@ -34,10 +45,67 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 5s
+      timeout: 5s
+      retries: 15
     networks:
       - net
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+  
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    restart: always
+    depends_on:
+      subscription:
+        condition: service_started
+      rate:
+        condition: service_started
+    networks: 
+      - net
+    ports:
+      - 3000:3000
+
+  subscription:
+    build: ./subscription-service
+    container_name: subscription
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      notification:
+        condition: service_started
+    networks: 
+      - net
+  
+  rate:
+    build: ./rate-service
+    container_name: rate
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      notification:
+        condition: service_started
+    networks: 
+      - net
+  
+  notification:
+    build: ./notification-service
+    container_name: notification
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+    networks: 
+      - net
 
 volumes:
   postgres_data:
