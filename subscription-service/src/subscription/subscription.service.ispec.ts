@@ -18,6 +18,10 @@ import {
 import { SubscriptionRepository } from './repositories';
 import { SubscriptionService } from './subscription.service';
 import { DatabaseModule, PrismaService } from '../database';
+import {
+  ISubscriptionMetricsService,
+  SUBSCRIPTION_METRICS_SERVICE,
+} from '../metrics/interfaces';
 
 describe('SubscriptionService', () => {
   const inactiveSubscriber = {
@@ -49,6 +53,13 @@ describe('SubscriptionService', () => {
         {
           provide: getLoggerToken(SubscriptionService.name),
           useValue: { info: jest.fn() },
+        },
+        {
+          provide: SUBSCRIPTION_METRICS_SERVICE,
+          useValue: <ISubscriptionMetricsService>{
+            incSubscriptionCreatedCounter: jest.fn(),
+            incSubscriptionDeletedCounter: jest.fn(),
+          },
         },
       ],
     }).compile();
