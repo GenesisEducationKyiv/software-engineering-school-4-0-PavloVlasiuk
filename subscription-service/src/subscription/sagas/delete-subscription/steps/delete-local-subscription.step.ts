@@ -17,14 +17,10 @@ export class DeleteLocalSubscriptionStep
   ) {}
 
   async execute({ email }: Partial<Subscription>): Promise<void> {
-    console.log('Local transaction');
-
     await this.subscriptionService.unsubscribe({ email });
   }
 
   async compensate({ email }: Partial<Subscription>): Promise<void> {
-    console.log('Local compensate transaction');
-
     await this.subscriptionService.subscribe({ email });
   }
 }

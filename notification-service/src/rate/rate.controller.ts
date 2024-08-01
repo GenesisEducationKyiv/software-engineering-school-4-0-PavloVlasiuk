@@ -5,6 +5,7 @@ import {
   Payload,
   RmqContext,
 } from '@nestjs/microservices';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 import { UpdateRateDto } from './dto';
 import { IRateService, RATE_SERVICE } from './interfaces';
@@ -17,6 +18,8 @@ export class RateConroller {
   constructor(
     @Inject(RATE_SERVICE)
     private readonly rateService: IRateService,
+    @InjectPinoLogger(RateConroller.name)
+    private readonly logger: PinoLogger,
   ) {}
 
   @MessagePattern(MESSAGE_PATTERNS.RATE_SYNCHRONIZE)
@@ -24,7 +27,9 @@ export class RateConroller {
     @Payload() dto: UpdateRateDto,
     @Ctx() context: RmqContext,
   ): Promise<IResponse> {
-    console.log('Rate synchronize message');
+    this.logger.info(
+      `Processing message - ${MESSAGE_PATTERNS.RATE_SYNCHRONIZE}`,
+    );
 
     const channel = context.getChannelRef();
 

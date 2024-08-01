@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { lastValueFrom } from 'rxjs';
 
 import { IResponse } from '../../../../common/interfaces';
@@ -15,18 +16,20 @@ export class DeleteNotificationDBSubscriptionStep
   constructor(
     @Inject(NOTIFICATION_CLIENT)
     private readonly notificationClient: ClientProxy,
+    @InjectPinoLogger(DeleteNotificationDBSubscriptionStep.name)
+    private readonly logger: PinoLogger,
   ) {
     notificationClient.connect();
   }
 
   async execute(params: Partial<Subscription>): Promise<void> {
-    console.log('Notification service transaction');
+    this.logger.info(
+      'External(notification microservice) - Triggering transaction to delete subscription',
+    );
 
     const response = await lastValueFrom<IResponse>(
       this.notificationClient.send(COMMANDS.SUBSCRIPTION_DELETE, params),
     );
-
-    console.log(response);
 
     if (!response.success)
       throw new RpcException({
@@ -36,7 +39,9 @@ export class DeleteNotificationDBSubscriptionStep
   }
 
   async compensate(params: Partial<Subscription>): Promise<void> {
-    console.log('Notification service compensate transaction');
+    this.logger.info(
+      'External(notification microservice) - Triggering compensate transaction to create subscription',
+    );
 
     await lastValueFrom(
       this.notificationClient.send(COMMANDS.SUBSCRIPTION_CREATE, params),

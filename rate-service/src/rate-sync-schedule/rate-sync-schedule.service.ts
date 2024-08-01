@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { lastValueFrom } from 'rxjs';
 
 import { IRateSyncScheduleService } from './interfaces';
@@ -19,13 +20,17 @@ export class RateSyncScheduleService implements IRateSyncScheduleService {
     private readonly rateService: IRateService,
     @Inject(NOTIFICATION_CLIENT)
     private readonly notificationClient: ClientProxy,
+    @InjectPinoLogger(RateSyncScheduleService.name)
+    private readonly logger: PinoLogger,
   ) {
     notificationClient.connect();
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_1AM, { timeZone: TIMEZONE })
   async synchronize(): Promise<void> {
-    console.log('Rate synchronize job');
+    const date = new Date().toDateString();
+
+    this.logger.info(`${date} - Daily exchange rate synchronization job`);
 
     const exchangeRate = await this.rateService.getCurrentRate();
 
@@ -34,7 +39,7 @@ export class RateSyncScheduleService implements IRateSyncScheduleService {
     );
 
     if (!response.success) {
-      console.log('Failed to synchronize exchange rate');
+      this.logger.error(`${date} - Failed to synchronize exchange rate`);
     }
   }
 }

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 import {
   DeleteLocalSubscriptionStep,
@@ -12,6 +13,8 @@ export class DeleteSubscriptionSaga implements ISaga<Partial<Subscription>> {
   private steps: IStep<Partial<Subscription>>[] = [];
 
   constructor(
+    @InjectPinoLogger(DeleteSubscriptionSaga.name)
+    private readonly logger: PinoLogger,
     private readonly step1: DeleteLocalSubscriptionStep,
     private readonly step2: DeleteNotificationDBSubscriptionStep,
   ) {
@@ -21,7 +24,7 @@ export class DeleteSubscriptionSaga implements ISaga<Partial<Subscription>> {
   async start(subscription: Partial<Subscription>): Promise<void> {
     const successfulSteps: IStep<Partial<Subscription>>[] = [];
 
-    console.log('\nStarting delete subscription saga...');
+    this.logger.info('Starting delete subscription saga...');
 
     for (const step of this.steps) {
       try {
@@ -29,7 +32,7 @@ export class DeleteSubscriptionSaga implements ISaga<Partial<Subscription>> {
 
         successfulSteps.unshift(step);
       } catch (error) {
-        console.log(error);
+        this.logger.error(`Delete subscription saga failed: ${error}`);
 
         if (!successfulSteps.length) throw error;
 
@@ -41,6 +44,6 @@ export class DeleteSubscriptionSaga implements ISaga<Partial<Subscription>> {
       }
     }
 
-    console.log('Transaction successful\n');
+    this.logger.info('Delete subscription saga was completed successfully');
   }
 }

@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 import { INotificationService, ISendRateData } from './interfaces';
 import {
@@ -12,6 +13,8 @@ export class NotificationService implements INotificationService {
   constructor(
     @Inject(MAILING_SERVICE)
     private readonly mailingService: IMailingService,
+    @InjectPinoLogger(NotificationService.name)
+    private readonly logger: PinoLogger,
   ) {}
 
   async sendRateEmail({ email, rate }: ISendRateData): Promise<void> {
@@ -26,7 +29,10 @@ export class NotificationService implements INotificationService {
         context,
       });
     } catch (error) {
-      console.log(`Email to ${email} failed to sent`);
+      this.logger.error(
+        `Daily notification - Email to ${email} failed to sent`,
+        { error },
+      );
     }
   }
 }

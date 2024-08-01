@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { Logger } from 'nestjs-pino';
 
 import { AppModule } from './app.module';
 import { AppConfigService } from './config/app-config';
@@ -27,7 +28,9 @@ async function bootstrap() {
     });
   }
 
-  app.useGlobalFilters(new AllExceptionsFilter());
+  const logger = app.get<Logger>(Logger);
+
+  app.useGlobalFilters(new AllExceptionsFilter(logger));
 
   await app.startAllMicroservices();
 

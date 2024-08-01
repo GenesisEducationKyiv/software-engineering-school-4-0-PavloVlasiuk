@@ -23,7 +23,6 @@ export class NodeMailerService implements IMailingService {
         context,
       })
       .catch((error) => {
-        console.error(`Sending email error: ${error}`);
         throw error;
       });
   }
