@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
 import {
   Rate,
   RateServiceController,
@@ -7,6 +7,7 @@ import {
 
 import { IRateService, RATE_SERVICE } from './interfaces';
 
+@Controller()
 @RateServiceControllerMethods()
 export class RateController implements RateServiceController {
   constructor(
