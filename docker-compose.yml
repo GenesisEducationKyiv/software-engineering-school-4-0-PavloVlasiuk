@@ -82,6 +82,8 @@ services:
         condition: service_started
     networks: 
       - net
+    ports:
+      - 3001:3000
   
   rate:
     build: ./rate-service
@@ -94,6 +96,8 @@ services:
         condition: service_started
     networks: 
       - net
+    ports:
+      - 3002:3000
   
   notification:
     build: ./notification-service
@@ -106,6 +110,8 @@ services:
         condition: service_healthy
     networks: 
       - net
+    ports:
+      - 3003:3000
 
   prometheus:
     image: prom/prometheus
@@ -121,8 +127,10 @@ services:
     image: grafana/grafana
     container_name: grafana
     restart: always
+    networks:
+      - net
     ports:
-      - '3001:3000'
+      - '4000:3000'
     volumes:
       - grafana-storage:/var/lib/grafana
 
