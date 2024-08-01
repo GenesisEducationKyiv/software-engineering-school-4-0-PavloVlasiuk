@@ -1,5 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { Prisma } from '@prisma/client';
+import { getLoggerToken } from 'nestjs-pino';
 
 import {
   SubscribeEmailRequestDto,
@@ -45,6 +46,10 @@ describe('SubscriptionService', () => {
       providers: [
         { provide: SUBSCRIPTION_SERVICE, useClass: SubscriptionService },
         { provide: SUBSCRIPTION_REPOSITORY, useClass: SubscriptionRepository },
+        {
+          provide: getLoggerToken(SubscriptionService.name),
+          useValue: { info: jest.fn() },
+        },
       ],
     }).compile();
 
