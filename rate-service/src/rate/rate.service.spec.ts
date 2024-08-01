@@ -14,6 +14,10 @@ import {
 } from './interfaces';
 import { RateService } from './rate.service';
 import { AppConfigModule } from '../config/app-config';
+import {
+  IRateMetricsService,
+  RATE_METRICS_SERVICE,
+} from '../metrics/interfaces';
 
 describe('RateService', () => {
   let rateService: IRateService;
@@ -33,6 +37,13 @@ describe('RateService', () => {
           inject: [NBUClient],
         },
         NBUClient,
+        {
+          provide: RATE_METRICS_SERVICE,
+          useValue: <IRateMetricsService>{
+            incRateFetchedCounter: jest.fn(),
+            incRateFetchingFailedCounter: jest.fn(),
+          },
+        },
       ],
     })
       .useMocker((token) => {
