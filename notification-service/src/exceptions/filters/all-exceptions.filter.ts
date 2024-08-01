@@ -1,5 +1,6 @@
 import { Catch, HttpStatus, RpcExceptionFilter } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
+import { Logger } from 'nestjs-pino';
 import { Observable, of } from 'rxjs';
 
 import { UnsuccessfulResponse } from '../../common/responses';
@@ -8,8 +9,10 @@ import { IRpcExceptionData } from '../interfaces';
 
 @Catch()
 export class AllExceptionsFilter implements RpcExceptionFilter {
+  constructor(private readonly logger: Logger) {}
+
   catch(exception: any): Observable<IResponse> {
-    console.log(exception);
+    this.logger.error(exception);
 
     if (exception instanceof RpcException) {
       const error = exception.getError() as IRpcExceptionData;

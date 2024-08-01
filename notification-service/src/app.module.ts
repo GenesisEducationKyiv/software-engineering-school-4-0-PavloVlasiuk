@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
+import { LoggerModule, Params } from 'nestjs-pino';
 
-import { AppConfigModule } from './config/app-config';
+import { AppConfigModule, AppConfigService } from './config/app-config';
 import { DatabaseModule } from './database/database.module';
 import { MailingModule } from './mailing/mailing.module';
 import { NotificationModule } from './notification/notification.module';
@@ -19,6 +20,13 @@ import { SubscriptionModule } from './subscription/subscription.module';
     RateModule,
     ScheduleModule.forRoot(),
     NotificationScheduleModule,
+    LoggerModule.forRootAsync({
+      imports: [AppConfigModule],
+      useFactory: (config: AppConfigService) => {
+        return config.get<Params>('logger.params');
+      },
+      inject: [AppConfigService],
+    }),
   ],
 })
 export class AppModule {}

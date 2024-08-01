@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 import { INotificationScheduleService } from './interfaces';
 import { TIMEZONE } from './notification-schedule.constants';
@@ -24,16 +25,22 @@ export class NotificationScheduleService
     private readonly subscriptionService: ISubscriptionService,
     @Inject(NOTIFICATION_SERVICE)
     private readonly notificationService: INotificationService,
+    @InjectPinoLogger(NotificationScheduleService.name)
+    private readonly logger: PinoLogger,
   ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_10AM, { timeZone: TIMEZONE })
   async sendRateEmail(): Promise<void> {
+    const date = new Date().toDateString();
+
+    this.logger.info(`${date} - Daily exchange rate email notification job`);
+
     const rate = await this.rateService.getLatest();
 
     const subscribers = await this.subscriptionService.getAllSubscribers();
 
     if (!subscribers.length) {
-      console.log('There are no subscribers yet');
+      this.logger.info(`${date} - There are no subscribers yet`);
       return;
     }
 

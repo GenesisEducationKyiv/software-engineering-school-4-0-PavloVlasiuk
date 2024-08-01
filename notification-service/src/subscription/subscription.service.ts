@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 import { SubscribeEmailDto, UnsubscribeEmailDto } from './dto';
 import {
@@ -15,10 +16,16 @@ export class SubscriptionService implements ISubscriptionService {
   constructor(
     @InjectModel(Subscription.name)
     private readonly subscriptionModel: Model<SubscriptionDocument>,
+    @InjectPinoLogger(SubscriptionService.name)
+    private readonly logger: PinoLogger,
   ) {}
 
   async subscribe(subscribeEmailDto: SubscribeEmailDto): Promise<void> {
     const { email } = subscribeEmailDto;
+
+    this.logger.info(
+      `Local(notification microservice) - Subscribing email: ${email}`,
+    );
 
     const isSubscribed = await this.isSubscribed(email);
 
@@ -33,6 +40,10 @@ export class SubscriptionService implements ISubscriptionService {
 
   async unsubscribe(unsubscribeEmailDto: UnsubscribeEmailDto): Promise<void> {
     const { email } = unsubscribeEmailDto;
+
+    this.logger.info(
+      `Local(notification microservice) - Unsubscribing email: ${email}`,
+    );
 
     const isSubscribed = await this.isSubscribed(email);
 

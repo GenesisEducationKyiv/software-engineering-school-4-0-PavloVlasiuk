@@ -5,6 +5,7 @@ import {
   Payload,
   RmqContext,
 } from '@nestjs/microservices';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 import { SubscribeEmailDto, UnsubscribeEmailDto } from './dto';
 import { ISubscriptionService, SUBSCRIPTION_SERVICE } from './interfaces';
@@ -17,6 +18,8 @@ export class SubscriptionController {
   constructor(
     @Inject(SUBSCRIPTION_SERVICE)
     private readonly subscriptionService: ISubscriptionService,
+    @InjectPinoLogger(SubscriptionController.name)
+    private readonly logger: PinoLogger,
   ) {}
 
   @MessagePattern(MESSAGE_PATTERNS.SUBSCRIPTION_CREATE)
@@ -24,7 +27,9 @@ export class SubscriptionController {
     @Payload() dto: SubscribeEmailDto,
     @Ctx() context: RmqContext,
   ): Promise<IResponse> {
-    console.log('Subscription create message');
+    this.logger.info(
+      `Processing message - ${MESSAGE_PATTERNS.SUBSCRIPTION_CREATE}`,
+    );
 
     const channel = context.getChannelRef();
 
@@ -48,7 +53,9 @@ export class SubscriptionController {
     @Payload() dto: UnsubscribeEmailDto,
     @Ctx() context: RmqContext,
   ): Promise<IResponse> {
-    console.log('Subscription delete message');
+    this.logger.info(
+      `Processing message - ${MESSAGE_PATTERNS.SUBSCRIPTION_DELETE}`,
+    );
 
     const channel = context.getChannelRef();
 
