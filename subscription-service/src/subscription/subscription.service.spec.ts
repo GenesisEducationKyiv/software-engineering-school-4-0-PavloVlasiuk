@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getLoggerToken } from 'nestjs-pino';
 
 import {
   SubscribeEmailRequestDto,
@@ -33,6 +34,10 @@ describe('SubscriptionService', () => {
             findAll: jest.fn(),
             deleteByEmail: jest.fn(),
           },
+        },
+        {
+          provide: getLoggerToken(SubscriptionService.name),
+          useValue: { info: jest.fn() },
         },
       ],
     }).compile();
