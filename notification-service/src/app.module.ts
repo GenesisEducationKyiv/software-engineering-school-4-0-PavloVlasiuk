@@ -5,6 +5,7 @@ import { LoggerModule, Params } from 'nestjs-pino';
 import { AppConfigModule, AppConfigService } from './config/app-config';
 import { DatabaseModule } from './database/database.module';
 import { MailingModule } from './mailing/mailing.module';
+import { MetricsModule } from './metrics/metrics.module';
 import { NotificationModule } from './notification/notification.module';
 import { NotificationScheduleModule } from './notification-schedule/notification-schedule.module';
 import { RateModule } from './rate/rate.module';
@@ -27,6 +28,7 @@ import { SubscriptionModule } from './subscription/subscription.module';
       },
       inject: [AppConfigService],
     }),
+    MetricsModule,
   ],
 })
 export class AppModule {}
