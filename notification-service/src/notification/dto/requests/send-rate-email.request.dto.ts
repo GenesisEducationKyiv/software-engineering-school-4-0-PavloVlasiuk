@@ -1,5 +1,8 @@
-import { IExchangeRate, IRecipient } from '../../../notification/interfaces';
+import { ISendRateData } from '../../../notification/interfaces';
 export class SendRateEmailRequestDto {
-  rate: IExchangeRate;
-  recipients: IRecipient[];
+  eventId: string;
+  eventType: string;
+  aggregateId: string;
+  timestamp: Date;
+  data: ISendRateData;
 }

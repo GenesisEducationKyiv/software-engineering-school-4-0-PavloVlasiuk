@@ -1,28 +1,30 @@
-import { Inject } from '@nestjs/common';
-import { Payload } from '@nestjs/microservices';
-import { Observable } from 'rxjs';
+import { Controller, Inject } from '@nestjs/common';
+import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 
-import { SendRateEmailRequestDto } from './dto/requests/send-rate-email.request.dto';
+import { SendRateEmailRequestDto } from './dto/requests';
 import { INotificationService, NOTIFICATION_SERVICE } from './interfaces';
-import {
-  NotificationServiceControllerMethods,
-  NotificationServiceController,
-  Empty,
-} from '../../../proto/dist/types/notification';
 
-@NotificationServiceControllerMethods()
-export class NotificationController implements NotificationServiceController {
+@Controller()
+export class NotificationController {
   constructor(
     @Inject(NOTIFICATION_SERVICE)
     private readonly notificationService: INotificationService,
   ) {}
 
-  sendRateEmail(
-    @Payload() request: SendRateEmailRequestDto,
-  ): Empty | Promise<Empty> | Observable<Empty> {
-    return this.notificationService.sendRateEmail(
-      request.rate,
-      request.recipients,
-    );
+  @EventPattern('rate-email-scheduled')
+  async sendRateEmail(
+    @Payload() dto: SendRateEmailRequestDto,
+    @Ctx() context: RmqContext,
+  ): Promise<void> {
+    const channel = context.getChannelRef();
+
+    const originalMessage = context.getMessage();
+
+    try {
+      await this.notificationService.sendRateEmail(dto.data);
+      channel.ack(originalMessage);
+    } catch (error) {
+      console.log(`Email to ${dto.data.subscriberEmail} failed to sent`);
+    }
   }
 }
