@@ -1,0 +1,94 @@
+name: Node.js CI
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        services:
+          [
+            "api-gateway",
+            "rate-service",
+            "subscription-service",
+            "notification-service",
+          ]
+
+    defaults:
+      run:
+        working-directory: ./${{matrix.services}}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Node.js and dependencies
+        uses: ./.github/actions/install
+        with:
+          project-dir: ${{matrix.services}}
+
+      - name: Lint
+        run: npm run lint
+
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        services:
+          [
+            "api-gateway",
+            "rate-service",
+            "subscription-service",
+            "notification-service",
+          ]
+
+    defaults:
+      run:
+        working-directory: ./${{matrix.services}}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Node.js and dependencies
+        uses: ./.github/actions/install
+        with:
+          project-dir: ${{matrix.services}}
+
+      - name: Build
+        run: npm run build --if-present
+
+      - name: Run tests
+        run: npm run test:unit
+
+  integration-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        services: ["subscription-service"]
+
+    defaults:
+      run:
+        working-directory: ./${{matrix.services}}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Node.js and dependencies
+        uses: ./.github/actions/install
+        with:
+          project-dir: ${{matrix.services}}
+
+      - name: Start PostgreSQL database
+        run: npm run db:test:up
+
+      - name: Run migrations
+        run: npm run migrate:test
+
+      - name: Run integration tests
+        run: npm run test:integration

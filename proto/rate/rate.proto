@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package rate;
+
+service RateService {
+  rpc GetCurrentRate(Empty) returns (Rate) {}
+}
+
+message Empty {}
+
+message Rate {
+  float rate = 1;
+  string exchangeDate = 2;
+}

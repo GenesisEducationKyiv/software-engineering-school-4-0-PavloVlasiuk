@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package subscription;
+
+service SubscriptionService {
+  rpc Subscribe(SubscribeEmailDto) returns (Empty) {}
+  rpc GetAllSubscribers(Empty) returns (Subscribers) {}
+}
+
+message SubscribeEmailDto { string email = 1; }
+
+message Empty {}
+
+message Subscriber {
+  string id = 1;
+  string email = 2;
+}
+
+message Subscribers { repeated Subscriber subscribers = 1; }
