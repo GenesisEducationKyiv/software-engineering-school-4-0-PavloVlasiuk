@@ -44,7 +44,7 @@ export class SubscriptionService implements ISubscriptionService {
     if (alreadySubscribed) throw new AlreadySubscribedException();
 
     await this.subscriptionRepository.createOrUpdate(email);
-    console.log('sub');
+
     this.metricsService.incSubscriptionCreatedCounter();
   }
 
