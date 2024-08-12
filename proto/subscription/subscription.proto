@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package subscription;
+
+service SubscriptionService {
+  rpc Subscribe(SubscribeEmailDto) returns (google.protobuf.Empty) {}
+  rpc GetAllSubscribers(google.protobuf.Empty) returns (Subscribers) {}
+  rpc Unsubscribe(UnsubscribeEmailDto) returns (google.protobuf.Empty) {}
+}
+
+message SubscribeEmailDto { string email = 1; }
+
+message UnsubscribeEmailDto { string email = 1; }
+
+message Subscriber {
+  string id = 1;
+  string email = 2;
+}
+
+message Subscribers { repeated Subscriber subscribers = 1; }
