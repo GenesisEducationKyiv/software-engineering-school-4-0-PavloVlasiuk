@@ -1,8 +1,9 @@
 {
-  "name": "proto",
-  "version": "1.0.0",
+  "name": "@usd-to-uah-rate-api/proto",
+  "version": "1.0.4",
   "description": "",
-  "main": "index.js",
+  "files": ["dist", "rate", "subscription"],
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "proto:build": "chmod +x ./compile.sh && ./compile.sh"
@@ -12,6 +13,7 @@
   "dependencies": {
     "@nestjs/microservices": "^10.3.10",
     "rxjs": "^7.8.1",
-    "ts-proto": "^1.181.0"
+    "ts-proto": "^1.181.0",
+    "tsc": "^2.0.4"
   }
 }

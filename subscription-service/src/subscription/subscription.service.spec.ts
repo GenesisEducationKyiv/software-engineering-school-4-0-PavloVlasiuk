@@ -1,8 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getLoggerToken } from 'nestjs-pino';
 
-import { SubscribeEmailRequestDto } from './dto/requests';
+import {
+  SubscribeEmailRequestDto,
+  UnsubscribeEmailRequestDto,
+} from './dto/requests';
 import { Subscription } from './entities';
-import { AlreadySubscribedException } from './exceptions';
+import {
+  AlreadySubscribedException,
+  EntityNotFoundException,
+} from './exceptions';
 import {
   ISubscriptionRepository,
   ISubscriptionService,
@@ -10,6 +17,10 @@ import {
   SUBSCRIPTION_SERVICE,
 } from './interfaces';
 import { SubscriptionService } from './subscription.service';
+import {
+  ISubscriptionMetricsService,
+  SUBSCRIPTION_METRICS_SERVICE,
+} from '../metrics/interfaces';
 
 describe('SubscriptionService', () => {
   let subscriptionService: ISubscriptionService;
@@ -22,9 +33,21 @@ describe('SubscriptionService', () => {
         {
           provide: SUBSCRIPTION_REPOSITORY,
           useValue: <ISubscriptionRepository>{
-            create: jest.fn(),
+            createOrUpdate: jest.fn(),
             findByEmail: jest.fn(),
             findAll: jest.fn(),
+            deleteByEmail: jest.fn(),
+          },
+        },
+        {
+          provide: getLoggerToken(SubscriptionService.name),
+          useValue: { info: jest.fn() },
+        },
+        {
+          provide: SUBSCRIPTION_METRICS_SERVICE,
+          useValue: <ISubscriptionMetricsService>{
+            incSubscriptionCreatedCounter: jest.fn(),
+            incSubscriptionDeletedCounter: jest.fn(),
           },
         },
       ],
@@ -56,10 +79,10 @@ describe('SubscriptionService', () => {
       );
       expect(subscriptionRepository.findByEmail).toHaveBeenCalledTimes(1);
 
-      expect(subscriptionRepository.create).toHaveBeenCalledWith(
+      expect(subscriptionRepository.createOrUpdate).toHaveBeenCalledWith(
         subscribeEmailDto.email,
       );
-      expect(subscriptionRepository.create).toHaveBeenCalledTimes(1);
+      expect(subscriptionRepository.createOrUpdate).toHaveBeenCalledTimes(1);
     });
 
     it('should throw AlreadySubscribedException', async () => {
@@ -70,6 +93,7 @@ describe('SubscriptionService', () => {
       jest.spyOn(subscriptionRepository, 'findByEmail').mockResolvedValue({
         id: 'uuid',
         email: subscribeEmailDto.email,
+        isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -94,18 +118,21 @@ describe('SubscriptionService', () => {
         {
           id: '60f96e72-66e2-476d-ac4b-d46114d17e3a',
           email: 'adripp0@gmail.com',
+          isActive: true,
           createdAt: new Date(2024, 2, 10),
           updatedAt: new Date(2024, 2, 10),
         },
         {
           id: '2fa7775d-a10e-4b97-9cfc-14cdc07a178c',
           email: 'abarizeret1@gmail.com',
+          isActive: true,
           createdAt: new Date(2024, 2, 22),
           updatedAt: new Date(2024, 2, 22),
         },
         {
           id: '29e6aa23-6f9b-42f2-b3ec-6bbaaf8cdce6',
           email: 'bgemlett2@gmail.com',
+          isActive: true,
           createdAt: new Date(2024, 4, 18),
           updatedAt: new Date(2024, 4, 18),
         },
@@ -120,6 +147,54 @@ describe('SubscriptionService', () => {
       expect(foundSubscribers).toEqual(subscribers);
 
       expect(subscriptionRepository.findAll).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('unsubscribe', () => {
+    it('should delete email subscription', async () => {
+      const unsubscribeEmailDto: UnsubscribeEmailRequestDto = {
+        email: 'subscribed.email@gmail.com',
+      };
+
+      jest.spyOn(subscriptionRepository, 'findByEmail').mockResolvedValue({
+        id: 'uuid',
+        email: unsubscribeEmailDto.email,
+        isActive: true,
+        createdAt: new Date(2024, 7, 1),
+        updatedAt: new Date(2024, 4, 19),
+      });
+
+      await subscriptionService.unsubscribe(unsubscribeEmailDto);
+
+      expect(subscriptionRepository.findByEmail).toHaveBeenCalledWith(
+        unsubscribeEmailDto.email,
+      );
+      expect(subscriptionRepository.findByEmail).toHaveBeenCalledTimes(1);
+
+      expect(subscriptionRepository.deleteByEmail).toHaveBeenCalledWith(
+        unsubscribeEmailDto.email,
+      );
+      expect(subscriptionRepository.deleteByEmail).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw EntityNotFoundException', async () => {
+      const unsubscribeEmailDto: UnsubscribeEmailRequestDto = {
+        email: 'subscribed.email@gmail.com',
+      };
+
+      jest.spyOn(subscriptionRepository, 'findByEmail').mockResolvedValue(null);
+
+      let exception: any;
+
+      try {
+        await subscriptionService.unsubscribe(unsubscribeEmailDto);
+      } catch (ex: any) {
+        exception = ex;
+      }
+
+      expect(exception).toBeInstanceOf(EntityNotFoundException);
+
+      expect(subscriptionRepository.findByEmail).toHaveBeenCalledTimes(1);
     });
   });
 });

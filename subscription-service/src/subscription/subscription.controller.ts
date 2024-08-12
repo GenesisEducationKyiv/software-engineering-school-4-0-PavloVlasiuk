@@ -1,33 +1,48 @@
-import { Inject } from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
 import { Payload } from '@nestjs/microservices';
-import { Observable } from 'rxjs';
-
-import { SubscribeEmailRequestDto } from './dto/requests';
-import { SubscribersResponse } from './dto/responses';
-import { ISubscriptionService, SUBSCRIPTION_SERVICE } from './interfaces';
 import {
-  Empty,
   Subscribers,
   SubscriptionServiceController,
   SubscriptionServiceControllerMethods,
-} from '../../../proto/dist/types/subscription';
+} from '@usd-to-uah-rate-api/proto/dist/subscription';
 
+import {
+  SubscribeEmailRequestDto,
+  UnsubscribeEmailRequestDto,
+} from './dto/requests';
+import { SubscribersResponse } from './dto/responses';
+import { Subscription } from './entities';
+import { ISubscriptionService, SUBSCRIPTION_SERVICE } from './interfaces';
+import { ISaga } from './sagas/interfaces';
+import { SAGAS } from './subscription.constants';
+
+@Controller()
 @SubscriptionServiceControllerMethods()
 export class SubscriptionController implements SubscriptionServiceController {
   constructor(
     @Inject(SUBSCRIPTION_SERVICE)
     private readonly subscriptionService: ISubscriptionService,
+    @Inject(SAGAS.CREATE_SUBSCRIPTION)
+    private readonly createSubscriptionSaga: ISaga<Partial<Subscription>>,
+    @Inject(SAGAS.DELETE_SUBSCRIPTION)
+    private readonly deleteSubscriptionSaga: ISaga<Partial<Subscription>>,
   ) {}
 
-  subscribe(
+  async subscribe(
     @Payload() subscribeEmailDto: SubscribeEmailRequestDto,
-  ): Empty | Promise<Empty> | Observable<Empty> {
-    return this.subscriptionService.subscribe(subscribeEmailDto);
+  ): Promise<void> {
+    return await this.createSubscriptionSaga.start(subscribeEmailDto);
   }
 
   async getAllSubscribers(): Promise<Subscribers> {
     const subscribers = await this.subscriptionService.getAllSubscribers();
 
     return new SubscribersResponse(subscribers);
+  }
+
+  async unsubscribe(
+    @Payload() unsubscribeEmailDto: UnsubscribeEmailRequestDto,
+  ): Promise<void> {
+    return await this.deleteSubscriptionSaga.start(unsubscribeEmailDto);
   }
 }

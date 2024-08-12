@@ -1,20 +1,26 @@
 import { Module } from '@nestjs/common';
-import { ScheduleModule } from '@nestjs/schedule';
+import { LoggerModule, Params } from 'nestjs-pino';
 
+import { AppConfigModule, AppConfigService } from './config/app-config';
 import { DatabaseModule } from './database/database.module';
 import { EventModule } from './event/event.module';
-import { NotificationScheduleModule } from './notification-schedule/notification-schedule.module';
-import { RateModule } from './rate/rate.module';
+import { MetricsModule } from './metrics/metrics.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 
 @Module({
   imports: [
     DatabaseModule,
     SubscriptionModule,
-    RateModule,
-    ScheduleModule.forRoot(),
     EventModule,
-    NotificationScheduleModule,
+    AppConfigModule,
+    LoggerModule.forRootAsync({
+      imports: [AppConfigModule],
+      useFactory: (config: AppConfigService) => {
+        return config.get<Params>('logger.params');
+      },
+      inject: [AppConfigService],
+    }),
+    MetricsModule,
   ],
 })
 export class AppModule {}

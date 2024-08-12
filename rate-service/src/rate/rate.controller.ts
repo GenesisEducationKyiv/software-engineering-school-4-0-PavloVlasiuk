@@ -1,12 +1,13 @@
-import { Inject } from '@nestjs/common';
-
-import { IRateService, RATE_SERVICE } from './interfaces';
+import { Controller, Inject } from '@nestjs/common';
 import {
   Rate,
   RateServiceController,
   RateServiceControllerMethods,
-} from '../../../proto/dist/types/rate';
+} from '@usd-to-uah-rate-api/proto/dist/rate';
 
+import { IRateService, RATE_SERVICE } from './interfaces';
+
+@Controller()
 @RateServiceControllerMethods()
 export class RateController implements RateServiceController {
   constructor(

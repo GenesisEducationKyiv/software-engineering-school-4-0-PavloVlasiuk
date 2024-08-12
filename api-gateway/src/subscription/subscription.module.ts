@@ -1,10 +1,9 @@
-import { join } from 'path';
-
+import { ChannelOptions } from '@grpc/grpc-js';
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { SUBSCRIPTION_PACKAGE_NAME } from '@usd-to-uah-rate-api/proto/dist/subscription';
 
 import { SubscriptionController } from './subscription.controller';
-import { SUBSCRIPTION_PACKAGE_NAME } from '../../../proto/dist/types/subscription';
 import { AppConfigModule, AppConfigService } from '../config/app-config';
 
 @Module({
@@ -18,15 +17,18 @@ import { AppConfigModule, AppConfigService } from '../config/app-config';
 
             const port = config.get<string>('grpc.subscription.port');
 
+            const channelOptions = config.get<ChannelOptions>(
+              'grpc.channelOptions',
+            );
+
             return {
               transport: Transport.GRPC,
               options: {
                 url: `${host}:${port}`,
                 package: SUBSCRIPTION_PACKAGE_NAME,
-                protoPath: join(
-                  __dirname,
-                  '../../../../../proto/subscription/subscription.proto',
-                ),
+                protoPath:
+                  'node_modules/@usd-to-uah-rate-api/proto/subscription/subscription.proto',
+                channelOptions,
               },
             };
           },

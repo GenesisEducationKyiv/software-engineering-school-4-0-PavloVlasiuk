@@ -1,4 +1,4 @@
-version: '3'
+version: '3.9'
 
 services:
   postgres:
@@ -9,8 +9,32 @@ services:
       - net
     ports:
       - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    env_file:
+      - ./notification-service/.env
+    restart: always
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+    networks: 
+      - net
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo_data:/var/lib/mongodb/data
     
   rabbitmq:
     image: rabbitmq:3-management
@@ -21,14 +45,100 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 5s
+      timeout: 5s
+      retries: 15
     networks:
       - net
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+  
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    restart: always
+    depends_on:
+      subscription:
+        condition: service_started
+      rate:
+        condition: service_started
+    networks: 
+      - net
+    ports:
+      - 3000:3000
+
+  subscription:
+    build: ./subscription-service
+    container_name: subscription
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      notification:
+        condition: service_started
+    networks: 
+      - net
+    ports:
+      - 3001:3000
+  
+  rate:
+    build: ./rate-service
+    container_name: rate
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      notification:
+        condition: service_started
+    networks: 
+      - net
+    ports:
+      - 3002:3000
+  
+  notification:
+    build: ./notification-service
+    container_name: notification
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+    networks: 
+      - net
+    ports:
+      - 3003:3000
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    networks:
+      - net
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: always
+    networks:
+      - net
+    ports:
+      - '4000:3000'
+    volumes:
+      - grafana-storage:/var/lib/grafana
 
 volumes:
   postgres_data:
   rabbitmq_data:
+  mongo_data:
+  grafana-storage:
 
 networks:
   net:

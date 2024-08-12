@@ -1,5 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { Logger } from 'nestjs-pino';
 
 import { AppModule } from './app.module';
 import { AppConfigService } from './config/app-config';
@@ -18,8 +19,6 @@ async function bootstrap() {
 
   app.setGlobalPrefix(GLOBAL_PREFIX);
 
-  app.useGlobalFilters(new RpcExceptionFilter());
-
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -30,8 +29,12 @@ async function bootstrap() {
     }),
   );
 
+  const logger = app.get<Logger>(Logger);
+
+  app.useGlobalFilters(new RpcExceptionFilter(logger));
+
   await app.listen(PORT, HOST, async () => {
-    console.log(`Server is running on http://${HOST}:${PORT}`);
+    logger.log(`Server is running on http://${HOST}:${PORT}`);
   });
 }
 bootstrap();
