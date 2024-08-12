@@ -2,47 +2,15 @@
 
 API service that allows you to get current rate USD to UAH. It uses NBU API to get exchange rate.
 
-## Installation
+## Application architecture
+![application architecture](docs/app-architecture.png)
 
-```bash
-$ npm install
-```
+## Preparation for running the app
+Add environment variables for microservices according to samples
 
-## Applying migrations
-
-```bash
-$ npm run migrate
-```
-
-## Running the app
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Test
-There are 9 unit test available
-
-```bash
-# unit tests
-$ npm run test
-```
-
-## Running in Docker
+## Running the app in Docker
 
 ```bash
 # build image and up containers in background
 $ docker compose up -d --build
 ```
-It should perform auto migration while starting the containers but this part of app was not well tested, so there can be errors here
-
-## Possible alerts
-- Rate service failed to fetch rate many times in a row: `rate_fetching_failed > 10`
-- Many rate email notification have not been sent: `rate_email_failed > 10`
