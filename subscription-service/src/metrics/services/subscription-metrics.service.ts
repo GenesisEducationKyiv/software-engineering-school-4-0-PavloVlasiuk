@@ -29,7 +29,6 @@ export class SubscriptionMetricsService
   }
 
   incSubscriptionCreatedCounter(): void {
-    console.log('metric');
     this.subscriptionCreatedCounter.inc();
   }
 

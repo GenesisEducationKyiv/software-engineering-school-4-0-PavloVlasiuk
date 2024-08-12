@@ -3,7 +3,7 @@ import { Provider } from '@nestjs/common';
 import { SUBSCRIPTION_REPOSITORY, SUBSCRIPTION_SERVICE } from './interfaces';
 import { SubscriptionRepository } from './repositories';
 import { CreateSubscriptionSaga } from './sagas/create-subscription';
-import { DeleteLocalSubscriptionStep } from './sagas/delete-subscription/steps';
+import { DeleteSubscriptionSaga } from './sagas/delete-subscription';
 import { SAGAS } from './subscription.constants';
 import { SubscriptionService } from './subscription.service';
 
@@ -24,7 +24,7 @@ const createSubscriptionSaga: Provider = {
 
 const deleteSubscriptionSaga: Provider = {
   provide: SAGAS.DELETE_SUBSCRIPTION,
-  useClass: DeleteLocalSubscriptionStep,
+  useClass: DeleteSubscriptionSaga,
 };
 
 export const subscriptionProviders = [

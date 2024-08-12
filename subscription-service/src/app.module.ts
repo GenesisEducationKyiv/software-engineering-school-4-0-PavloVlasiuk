@@ -6,13 +6,6 @@ import { DatabaseModule } from './database/database.module';
 import { EventModule } from './event/event.module';
 import { MetricsModule } from './metrics/metrics.module';
 import { SubscriptionModule } from './subscription/subscription.module';
-import { RateModule } from './rate/rate.module';
-import { TaskScheduleModule } from './task-schedule/task-schedule.module';
-import { ScheduleModule } from '@nestjs/schedule';
-
-import { DatabaseModule } from './database/database.module';
-import { RateModule } from './rate/rate.module';
-import { SubscriptionModule } from './subscription/subscription.module';
 
 @Module({
   imports: [
